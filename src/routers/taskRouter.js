@@ -1,25 +1,25 @@
-// import express from "express"
-// import { check } from "express-validator";
-// import { validateRequest } from "../middleware/requestValidation.js";
-// import { validateToken } from "../middleware/tokenValidation.js";
-// import * as taskController from "../controllers/taskController.js"
-// export const router = express.Router();
+import express from "express"
+import { check } from "express-validator";
+import { validateRequest } from "../middleware/requestValidation.js";
+import { validateToken } from "../middleware/tokenValidation.js";
+import * as taskController from "../controllers/taskController.js"
+export const router = express.Router();
 
-// router.post("/add", 
-//     check("title")
-//         .notEmpty()
-//         .withMessage("Task Title is Required")
-//         .trim()
-//         .escape(),
-//     check("repeatDays")
-//         .exists()
-//         .withMessage("Days to Repeat Tasks is compulsory")
-//         .isArray({ min: 1 })
-//         .withMessage('Array cannot be empty'),
-//     validateRequest,
-//     validateToken,
-//     taskController.addTask
-// )
+router.post("/add", 
+    check("title")
+        .notEmpty()
+        .withMessage("Task Title is Required")
+        .trim()
+        .escape(),
+    check("repeatDays")
+        .exists()
+        .withMessage("Days to Repeat Tasks is compulsory")
+        .isArray({ min: 1 })
+        .withMessage('Array cannot be empty'),
+    validateRequest,
+    validateToken,
+    taskController.addTask
+)
 
 // router.put("/edit",
 //     check("title")

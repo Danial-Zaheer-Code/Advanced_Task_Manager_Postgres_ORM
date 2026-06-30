@@ -1,25 +1,44 @@
-// import { connectionPool } from "../config/dbConfig.js";
+import { create } from "node:domain";
+import { prisma } from "../lib/prisma.js";
+import { connect } from "node:http2";
+import { useReducer } from "react";
 
-// export async function addTaskDB(userId, task) {
-//     try {
-//         const [result] = await connectionPool.query(`
-// 			INSERT INTO tasks (title, user_id, task_status)
-// 			VALUES (?, ?, ?);
-// 			`, [task.title, userId, 'active']);
-        
+export async function isTaskExists(userId, title) {
+    try {
+        const task = await prisma.task.findFirst({
+            where: {
+                title: title,
+                isDeleted: false,
+                userId: userId
+            }
+        })
 
-//         const taskId = result.insertId;
+        return task != null;
+    } catch (error) {
+        throw error;
+    }
+}
 
-//         const repeatDays = task.repeatDays.map(day => [taskId,day]);
-//         return await connectionPool.query(`
-//             INSERT INTO tasks_repeat(task_id, day_repeat)
-//             VALUES ?
-//             `, [repeatDays]);
 
-//     } catch (error) {
-//         throw error;
-//     }
-// }
+export async function addTaskDB(userId, task) {
+    try {
+        await prisma.task.create({
+            data:{
+                title: task.title,
+                user: {
+                    connect: {
+                        id: userId
+                    }
+                },
+                repeatDays: {
+                    create: task.repeatDays.map(day => ({day}))
+                }
+            }
+        })
+    } catch (error) {
+        throw error;
+    }
+}
 
 // export async function changeStatusDB(id, status) {
 //     try {
@@ -45,18 +64,6 @@
 //         WHERE id=?
 //         `, [id]);
 //         return result.affectedRows == 1;
-//     } catch (error) {
-//         throw error;
-//     }
-// }
-
-// export async function isTaskExists(title) {
-//     try {
-//         const [result] = await connectionPool.query(`
-//         SELECT * FROM tasks WHERE title=? AND is_deleted=0;
-//         `, [title]);
-
-//         return result.length == 1; 
 //     } catch (error) {
 //         throw error;
 //     }

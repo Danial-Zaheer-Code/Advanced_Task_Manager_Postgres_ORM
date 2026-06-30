@@ -1,38 +1,37 @@
-// import { connectionPool } from "../config/dbConfig.js";
-// import * as taskServices from "../services/taskServices.js"
-// import { areValid } from "../utils/utils.js";
-// export async function addTask(req, res) {
-//     try {
-//         const userId = req.userId;
-//         const task = req.body;
-//         const isExist = await taskServices.isTaskExists(task.title) 
-//         if (isExist) {
-//             return res.status(409).json({
-//                 success: false,
-//                 message: "Task already exists"
-//             });
-//         }
+import * as taskServices from "../services/taskServices.js"
+import { convertToUpperCase, areValid } from "../utils/utils.js";
+export async function addTask(req, res) {
+    try {
+        const userId = req.userId;
+        const task = req.body;
+        if (await taskServices.isTaskExists(req.userId, task.title)) {
+            return res.status(409).json({
+                success: false,
+                message: "Task already exists"
+            });
+        }
 
-//         if(!areValid(task.repeatDays)){
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "Invalid weekdays"
-//             });
-//         }
+        task.repeatDays = convertToUpperCase(task.repeatDays);
+        if(!areValid(task.repeatDays)){
+            return res.status(400).json({
+                success: false,
+                message: "Invalid weekdays"
+            });
+        }
 
-//         await taskServices.addTaskDB(userId, task);
-//         return res.status(201).json({
-//                 success: true,
-//                 message: "Task created successfully"
-//             });
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//                 success: false,
-//                 message: "Something went wrong. Try again later"
-//             });
-//     }
-// }
+        await taskServices.addTaskDB(userId, task);
+        return res.status(201).json({
+                success: true,
+                message: "Task created successfully"
+            });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+                success: false,
+                message: "Something went wrong. Try again later"
+            });
+    }
+}
 
 // export async function changeStatus(req, res) {
 //     try {

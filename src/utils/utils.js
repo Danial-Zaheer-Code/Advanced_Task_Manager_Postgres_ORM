@@ -14,22 +14,25 @@ export async function compare(inputPassword, storedHashedPassword) {
 }
 
 
-
-function isWeekdayName(str, locale = 'en-US') {
-  const weekdays = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(2023, 0, i + 1); // Jan 1, 2023 was a Sunday
-    return new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(date).toLowerCase();
-  });
-
-  return weekdays.includes(str.trim().toLowerCase());
+export function convertToUpperCase(strings){
+    return strings.map(str => str.trim().toUpperCase());
 }
+
+
+
+
+
+
+const weekdays = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(2023, 0, i + 1); // Jan 1, 2023 was a Sunday
+    return new Intl.DateTimeFormat("en-US", { weekday: 'long' }).format(date).toUpperCase();
+  });
 
 export function areValid(days){
     for(let i = 0; i < days.length; i++){
-        if(!isWeekdayName(days[i])){
+        if(!weekdays.includes(days[i])){
             return false;
         }
     }
-
     return true;
 }
