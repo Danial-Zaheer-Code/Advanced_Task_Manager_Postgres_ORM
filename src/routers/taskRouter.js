@@ -1,0 +1,89 @@
+// import express from "express"
+// import { check } from "express-validator";
+// import { validateRequest } from "../middleware/requestValidation.js";
+// import { validateToken } from "../middleware/tokenValidation.js";
+// import * as taskController from "../controllers/taskController.js"
+// export const router = express.Router();
+
+// router.post("/add", 
+//     check("title")
+//         .notEmpty()
+//         .withMessage("Task Title is Required")
+//         .trim()
+//         .escape(),
+//     check("repeatDays")
+//         .exists()
+//         .withMessage("Days to Repeat Tasks is compulsory")
+//         .isArray({ min: 1 })
+//         .withMessage('Array cannot be empty'),
+//     validateRequest,
+//     validateToken,
+//     taskController.addTask
+// )
+
+// router.put("/edit",
+//     check("title")
+//         .notEmpty()
+//         .withMessage("Task Title is Required")
+//         .trim()
+//         .escape(),
+//     check("repeatDays")
+//         .exists()
+//         .withMessage("Days to Repeat Tasks is compulsory")
+//         .isArray({ min: 1 })
+//         .withMessage('Array cannot be empty'),
+//     validateRequest,
+//     validateToken,
+//     taskController.editTask
+// )
+
+// router.delete("/delete",
+//     check("id")
+//     .exists()
+//     .withMessage("id is required")
+//     .isNumeric()
+//     .withMessage("id must be a number"),
+//     validateRequest,
+//     validateToken,
+//     taskController.deleteTask
+// )
+
+// router.patch("/status",
+//     check("id")
+//         .exists()
+//         .withMessage("Id is rquired")
+//         .isNumeric()
+//         .withMessage("Id must be a number"),
+//     check("status")
+//         .exists()
+//         .withMessage("Status is required")
+//         .isString()
+//         .withMessage("Status must be a string"),
+//     validateRequest,
+//     validateToken,
+//     taskController.changeStatus
+// )
+
+// router.get("/today",
+//     validateRequest,
+//     validateToken,
+//     taskController.getTodayTasks
+// )
+
+// router.get("/completed",
+//     validateRequest,
+//     validateToken,
+//     taskController.getCompletedTasks
+// )
+
+// router.patch("/markComplete",
+//     validateRequest,
+//     validateToken,
+//     taskController.markCompleted
+// )
+
+// router.get("/all",
+//     validateRequest,
+//     validateToken,
+//     taskController.getAllTasks
+// )

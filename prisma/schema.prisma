@@ -13,8 +13,8 @@ model User {
   name  String
   password String @unique
   phone String @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt @default(now())
+  createdAT DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @default(now()) @map("updated_at")
   tasks Task[]
   @@map("users")
 }
@@ -28,8 +28,41 @@ model Task{
   id Int @id @default(autoincrement())
   title String @unique
   taskStatus TaskStatus @default(ACTIVE) @map("task_status")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @default(now()) @map("updated_at")
+  isDeleted Boolean @default(false) @map("is_deleted")
+  deletedAt DateTime? @map("deleted_at")
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int @map("user_id")
+
+  repeatDays TaskRepeatDay[]
+  completedTask CompletedTask[]
   @@map("tasks")
 }
 
+enum Day {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  TURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+model TaskRepeatDay{
+  id Int @id @default(autoincrement())
+  day Day
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId Int @map("task_id")
+
+  @@map("task_repeat_days")
+}
+
+model CompletedTask {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId Int @map("task_id")
+  @@map("completed_tasks")
+}
