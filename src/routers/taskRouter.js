@@ -32,6 +32,13 @@ router.delete("/delete",
     taskController.deleteTask
 )
 
+
+router.get("/today",
+    validateRequest,
+    validateToken,
+    taskController.getTodayTasks
+)
+
 // router.put("/edit",
 //     check("title")
 //         .notEmpty()
@@ -66,11 +73,6 @@ router.delete("/delete",
 //     taskController.changeStatus
 // )
 
-// router.get("/today",
-//     validateRequest,
-//     validateToken,
-//     taskController.getTodayTasks
-// )
 
 // router.get("/completed",
 //     validateRequest,

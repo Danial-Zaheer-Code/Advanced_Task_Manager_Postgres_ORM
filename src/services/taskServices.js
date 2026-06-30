@@ -1,7 +1,5 @@
-import { create } from "node:domain";
 import { prisma } from "../lib/prisma.js";
-import { connect } from "node:http2";
-import { useReducer } from "react";
+import { getTodayName } from "../utils/utils.js";
 
 export async function isTaskExists(userId, title) {
     try {
@@ -29,7 +27,7 @@ export async function isTaskExistsWithId(userId, id) {
             }
         })
 
-        return task != null; 
+        return task != null;
     } catch (error) {
         throw error;
     }
@@ -38,7 +36,7 @@ export async function isTaskExistsWithId(userId, id) {
 export async function addTaskDB(userId, task) {
     try {
         await prisma.task.create({
-            data:{
+            data: {
                 title: task.title,
                 user: {
                     connect: {
@@ -46,7 +44,7 @@ export async function addTaskDB(userId, task) {
                     }
                 },
                 repeatDays: {
-                    create: task.repeatDays.map(day => ({day}))
+                    create: task.repeatDays.map(day => ({ day }))
                 }
             }
         })
@@ -68,6 +66,50 @@ export async function deleteTaskDB(userId, id) {
     }
 }
 
+export async function getTodayTasksDB(userId) {
+    try {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+
+        const today = getTodayName();
+
+        const tasks = await prisma.task.findMany({
+            where: {
+                userId: userId,
+                isDeleted: false,
+                taskStatus: "ACTIVE",
+                repeatDays: {
+                    some: {
+                        day: today,
+                    },
+                },
+            },
+            select: {
+                id: true,
+                title: true,
+                completedTasks: {
+                    where: {
+                        completedAt: { 
+                            gte: startOfToday,
+                            lte: endOfToday,
+                        },
+                    },
+                    select: {
+                        completedAt: true,
+                    },
+                },
+            },
+        });
+
+        return tasks;
+    } catch (error) {
+        throw error;
+    }
+}
+
 // export async function changeStatusDB(id, status) {
 //     try {
 //         const [result] = await connectionPool.query(`
@@ -84,38 +126,13 @@ export async function deleteTaskDB(userId, id) {
 // }
 
 
-// export async function getTodayTasksDB(userId) {
-//     try {
-//         const [result] = await connectionPool.query(`
-//             SELECT t.id, t.title,
-//             EXISTS (
-//                 SELECT 1
-//                 FROM tasks_completed c
-//                 WHERE c.task_id = t.id
-//                 AND CURDATE() = DATE(c.completion_date)
-//             ) AS is_completed
-//             FROM tasks t
-//             INNER JOIN tasks_repeat r
-//             ON t.id = r.task_id
-//             WHERE t.user_id = ?
-//             AND t.task_status = 'active'
-//             AND t.is_deleted = 0
-//             AND r.day_repeat = DAYNAME(CURDATE())
-//             ;
-//             `, [userId])
-//         return result;
-//     } catch (error) {
-//         throw error;
-//     }
-// }
-
 // export async function getCompletedTasksDB(userId) {
 //     try {
 //         const [result] = await connectionPool.query(`
 //             SELECT t.id, t.title, DATE(c.completion_date) as completion_date
 //             FROM tasks t
 //             INNER JOIN tasks_completed c ON t.id = c.task_id
-//             WHERE t.user_id = ? 
+//             WHERE t.user_id = ?
 //             AND t.is_deleted = 0;
 //             `, [userId])
 //         return result;
@@ -171,7 +188,7 @@ export async function deleteTaskDB(userId, id) {
 //         await connectionPool.query(`
 //             UPDATE tasks
 //             SET title=?
-//             WHERE id=?            
+//             WHERE id=?
 //         `,[task.title, task.id]);
 
 //         await connectionPool.query(`
@@ -192,7 +209,7 @@ export async function deleteTaskDB(userId, id) {
 
 // export async function isTitleTaken(id, title){
 //     const [result] = await connectionPool.query(`
-//         SELECT * FROM tasks 
+//         SELECT * FROM tasks
 //         WHERE title=?
 //         AND id<>?
 //         AND is_deleted=0;

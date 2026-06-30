@@ -36,7 +36,7 @@ model Task{
   userId Int @map("user_id")
 
   repeatDays TaskRepeatDay[]
-  completedTask CompletedTask[]
+  completedTasks CompletedTask[]
 
   @@unique([userId, title])
   @@map("tasks")
@@ -63,7 +63,7 @@ model TaskRepeatDay{
 
 model CompletedTask {
   id Int @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at")
+  completedAt DateTime @default(now()) @map("completed_at")
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskId Int @map("task_id")
   @@map("completed_tasks")

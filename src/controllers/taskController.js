@@ -56,21 +56,26 @@ export async function deleteTask(req, res) {
     }
 }
 
-// export async function getTodayTasks(req, res){
-//     try {
-//         const tasks = await taskServices.getTodayTasksDB(req.userId);
-//         res.status(200).json({
-//                 success: true,
-//                 tasks: tasks
-//         });
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//                 success: false,
-//                 message: "Something went wrong. Try again later"
-//         });
-//     }
-// }
+export async function getTodayTasks(req, res){
+    try {
+        let tasks = await taskServices.getTodayTasksDB(req.userId);
+        tasks = tasks.map(task => {
+            task.isCompleted = task.completedTasks.length != 0;
+            delete task.completedTasks;
+            return task;
+        })
+        res.status(200).json({
+                success: true,
+                tasks: tasks
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+                success: false,
+                message: "Something went wrong. Try again later"
+        });
+    }
+}
 
 // export async function getCompletedTasks(req, res){
 //     try {
