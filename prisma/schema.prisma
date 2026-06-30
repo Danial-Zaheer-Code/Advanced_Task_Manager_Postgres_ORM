@@ -26,7 +26,7 @@ enum TaskStatus {
 
 model Task{
   id Int @id @default(autoincrement())
-  title String @unique
+  title String
   taskStatus TaskStatus @default(ACTIVE) @map("task_status")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @default(now()) @map("updated_at")
@@ -37,6 +37,8 @@ model Task{
 
   repeatDays TaskRepeatDay[]
   completedTask CompletedTask[]
+
+  @@unique([userId, title])
   @@map("tasks")
 }
 
