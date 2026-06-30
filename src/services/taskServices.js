@@ -28,7 +28,6 @@ export async function isTaskExistsWithId(userId, id) {
                 userId: userId
             }
         })
-        console.log(task);
 
         return task != null; 
     } catch (error) {
