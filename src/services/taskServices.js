@@ -19,6 +19,22 @@ export async function isTaskExists(userId, title) {
     }
 }
 
+export async function isTaskExistsWithId(userId, id) {
+    try {
+        const task = await prisma.task.findFirst({
+            where: {
+                id: id,
+                isDeleted: false,
+                userId: userId
+            }
+        })
+        console.log(task);
+
+        return task != null; 
+    } catch (error) {
+        throw error;
+    }
+}
 
 export async function addTaskDB(userId, task) {
     try {
@@ -33,6 +49,19 @@ export async function addTaskDB(userId, task) {
                 repeatDays: {
                     create: task.repeatDays.map(day => ({day}))
                 }
+            }
+        })
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function deleteTaskDB(userId, id) {
+    try {
+        await prisma.task.delete({
+            where: {
+                id: id,
+                userId: userId
             }
         })
     } catch (error) {
@@ -55,30 +84,6 @@ export async function addTaskDB(userId, task) {
 //     }
 // }
 
-// export async function deleteTaskDB(id) {
-//     try {
-//         const [result] = await connectionPool.query(`
-//         UPDATE tasks
-//         SET is_deleted=1,
-//         deleted_at=CURRENT_TIMESTAMP
-//         WHERE id=?
-//         `, [id]);
-//         return result.affectedRows == 1;
-//     } catch (error) {
-//         throw error;
-//     }
-// }
-
-// export async function isTaskExistsWithId(id) {
-//     try {
-//         const [result] =  await connectionPool.query(`
-//         SELECT * FROM tasks WHERE id=? AND is_deleted=0;
-//         `, [id]);
-//         return result.length == 1; 
-//     } catch (error) {
-//         throw error;
-//     }
-// }
 
 // export async function getTodayTasksDB(userId) {
 //     try {

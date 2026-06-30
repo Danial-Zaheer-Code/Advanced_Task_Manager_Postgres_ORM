@@ -21,6 +21,17 @@ router.post("/add",
     taskController.addTask
 )
 
+router.delete("/delete",
+    check("id")
+    .exists()
+    .withMessage("id is required")
+    .isNumeric()
+    .withMessage("id must be a number"),
+    validateRequest,
+    validateToken,
+    taskController.deleteTask
+)
+
 // router.put("/edit",
 //     check("title")
 //         .notEmpty()
@@ -37,16 +48,7 @@ router.post("/add",
 //     taskController.editTask
 // )
 
-// router.delete("/delete",
-//     check("id")
-//     .exists()
-//     .withMessage("id is required")
-//     .isNumeric()
-//     .withMessage("id must be a number"),
-//     validateRequest,
-//     validateToken,
-//     taskController.deleteTask
-// )
+
 
 // router.patch("/status",
 //     check("id")

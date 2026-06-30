@@ -33,71 +33,28 @@ export async function addTask(req, res) {
     }
 }
 
-// export async function changeStatus(req, res) {
-//     try {
-//         const status = req.body.status.toLowerCase();
+export async function deleteTask(req, res) {
+    try {
+        if(!await taskServices.isTaskExistsWithId(req.userId, req.body.id)){
+            return res.status(409).json({
+                success: false,
+                message: "Task does not exists"
+            });
+        }
 
-//         if(status != "active" && status != "inactive"){
-//             res.status(400).json({
-//                 success: false,
-//                 message: "Wrong status"
-//             });
-//         }
-
-//         const isExist = await taskServices.isTaskExistsWithId(req.body.id) 
-//         if (!isExist) {
-//             return res.status(409).json({
-//                 success: false,
-//                 message: "Task Does not Exist"
-//             });
-//         }
-
-//         const hasChanged = await taskServices.changeStatusDB(req.body.id, status);
-
-//         if(!hasChanged){
-//             return res.status(200).json({
-//                 success: true,
-//                 message: `Status is alrady ${status}`
-//             })
-//         }
-
-//         return res.status(200).json({
-//                 success: true,
-//                 message: "Task Status updated successfully"
-//             });
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//                 success: false,
-//                 message: "Something went wrong. Try again later"
-//         });
-//     }
-// }
-
-// export async function deleteTask(req, res) {
-//     try {
-//         const isExist = await taskServices.isTaskExistsWithId(req.body.id);
-
-//         if(!isExist){
-//             return res.status(409).json({
-//                 success: false,
-//                 message: "Task does not exists"
-//             });
-//         }
-
-//         await taskServices.deleteTaskDB(req.body.id);
-//         return res.status(200).json({
-//                 success: true,
-//                 message: "Task deleted successfully"
-//             });
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//                 success: false,
-//                 message: "Something went wrong. Try again later"
-//         });
-//     }
-// }
+        await taskServices.deleteTaskDB(req.userId, req.body.id);
+        return res.status(200).json({
+                success: true,
+                message: "Task deleted successfully"
+            });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+                success: false,
+                message: "Something went wrong. Try again later"
+        });
+    }
+}
 
 // export async function getTodayTasks(req, res){
 //     try {
@@ -213,5 +170,47 @@ export async function addTask(req, res) {
 //                 success: false,
 //                 message: "Something went wrong. Try again later"
 //         });    
+//     }
+// }
+
+
+// export async function changeStatus(req, res) {
+//     try {
+//         const status = req.body.status.toLowerCase();
+
+//         if(status != "active" && status != "inactive"){
+//             res.status(400).json({
+//                 success: false,
+//                 message: "Wrong status"
+//             });
+//         }
+
+//         const isExist = await taskServices.isTaskExistsWithId(req.body.id) 
+//         if (!isExist) {
+//             return res.status(409).json({
+//                 success: false,
+//                 message: "Task Does not Exist"
+//             });
+//         }
+
+//         const hasChanged = await taskServices.changeStatusDB(req.body.id, status);
+
+//         if(!hasChanged){
+//             return res.status(200).json({
+//                 success: true,
+//                 message: `Status is alrady ${status}`
+//             })
+//         }
+
+//         return res.status(200).json({
+//                 success: true,
+//                 message: "Task Status updated successfully"
+//             });
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).json({
+//                 success: false,
+//                 message: "Something went wrong. Try again later"
+//         });
 //     }
 // }
