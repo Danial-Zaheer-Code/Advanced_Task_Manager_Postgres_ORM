@@ -11,26 +11,30 @@ export async function register(req, res) {
 
         if (await userServices.getUser(user.email) != null) {
             return res.status(409).json({
+                status: false,
                 message: 'User already exists.'
             })
         }
 
         if(await userServices.isPhoneNumberExist(user.phone)){
             return res.status(409).json({
+                status: false,
                 message: "Phone Number already exists"
             });
         }
 
 
         user.password = await hash(user.password);
-        const result = await userServices.addUser(user)
+        await userServices.addUser(user)
 
         return res.status(201).json({
+            status: true,
             message: 'User created successfully'
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
+            status: false,
             message: 'Something went wrong. Try again later.'
         })
     }
@@ -43,6 +47,7 @@ export async function login(req, res) {
         const existingUser = await userServices.getUser(user.email);
         if (!existingUser) {
             return res.status(404).json({
+                status: false,
                 message: 'User not found'
             });
         }
@@ -51,6 +56,7 @@ export async function login(req, res) {
 
         if (!isMatch) {
             return res.status(401).json({
+                status: false,
                 message: 'Wrong Password'
             });
         }
@@ -64,8 +70,8 @@ export async function login(req, res) {
         );
 
         return res.status(200).json({
-            message: 'Login Successful',
             success: true,
+            message: 'Login Successful',
             user: {
                 name: existingUser.name,
                 token: token

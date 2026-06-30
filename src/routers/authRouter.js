@@ -38,11 +38,15 @@ router.post('/register',
 
 router.post('/login',
     check("email")
+        .exists()
+        .withMessage("Email is required")
         .isEmail()
         .withMessage("Invalid Email")
         .trim()
         .normalizeEmail(),
     check("password")
+        .exists()
+        .withMessage('Password is rewuired')
         .notEmpty()
         .withMessage("Password is required")
         .isLength({ min: 8 })
