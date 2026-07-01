@@ -86,8 +86,8 @@ router.patch("/markComplete",
     taskController.markCompleted
 )
 
-// router.get("/all",
-//     validateRequest,
-//     validateToken,
-//     taskController.getAllTasks
-// )
+router.get("/all",
+    validateRequest,
+    validateToken,
+    taskController.getAllTasks
+)

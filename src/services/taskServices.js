@@ -106,21 +106,27 @@ export async function getTodayTasksDB(userId) {
 }
 
 
-// export async function getAllTasksDB(userId) {
-//     try {
-//         const [result] = await connectionPool.query(`
-//             SELECT t.id, t.title, t.task_status, GROUP_CONCAT(r.day_repeat) repeat_days
-//             FROM tasks t
-//             LEFT JOIN tasks_repeat r ON t.id = r.task_id
-//             WHERE t.is_deleted = 0
-//             GROUP BY t.id;
-//         `);
-
-//         return result;
-//     } catch (error) {
-//         throw error;
-//     }
-// }
+export async function getAllTasksDB(userId) {
+    try {
+        const tasks = await prisma.task.findMany({
+            where: {
+                userId: userId
+            },
+            select: {
+                id: true,
+                title: true,
+                repeatDays: {
+                    select: {
+                        day: true
+                    }
+                },
+            },
+        });
+        return tasks;
+    } catch (error) {
+        throw error;
+    }
+}
 
 
 // export async function changeStatusDB(id, status) {

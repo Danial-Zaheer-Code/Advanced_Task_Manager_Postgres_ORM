@@ -131,21 +131,21 @@ export async function markCompleted(req, res){
     }
 }
 
-// export async function getAllTasks(req,res) {
-//     try {
-//         const allTasks = await taskServices.getAllTasksDB(req.userId);
-//         res.status(200).json({
-//                 success: true,
-//                 allTasks: allTasks
-//         });
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//                 success: false,
-//                 message: "Something went wrong. Try again later"
-//         });
-//     }
-// }
+export async function getAllTasks(req,res) {
+    try {
+        const allTasks = await taskServices.getAllTasksDB(req.userId);
+        res.status(200).json({
+                success: true,
+                allTasks: allTasks
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+                success: false,
+                message: "Something went wrong. Try again later"
+        });
+    }
+}
 
 
 // export async function editTask(req, res) {
