@@ -58,7 +58,8 @@ export async function deleteTaskDB(userId, taskId) {
         await prisma.task.delete({
             where: {
                 id: taskId,
-                userId: userId
+                userId: userId,
+                isDeleted: false
             }
         })
     } catch (error) {
@@ -110,11 +111,13 @@ export async function getAllTasksDB(userId) {
     try {
         const tasks = await prisma.task.findMany({
             where: {
-                userId: userId
+                userId: userId,
+                isDeleted: false
             },
             select: {
                 id: true,
                 title: true,
+                taskStatus: true,
                 repeatDays: {
                     select: {
                         day: true
@@ -129,20 +132,27 @@ export async function getAllTasksDB(userId) {
 }
 
 
-// export async function changeStatusDB(id, status) {
-//     try {
-//         const [result] = await connectionPool.query(`
-//         UPDATE tasks
-//         SET task_status=?
-//         WHERE id=?
-//         AND task_status <> ?
-//         `, [status, id, status]);
-//         return result.affectedRows == 1;
+export async function changeStatusDB(taskId, status) {
+    try {
+        console.log(taskId, status);
+        const updatedtasks = await prisma.task.updateMany({
+            where: {
+                id: taskId,
+                isDeleted: false,
+                NOT : {
+                    taskStatus: status
+                }
+            },
+            data: {
+                taskStatus: status
+            }
+        })
 
-//     } catch (error) {
-//         throw error;
-//     }
-// }
+        return updatedtasks.count > 0;
+    } catch (error) {
+        throw error;
+    }
+}
 
 // export async function editTask(task){
 //     try {

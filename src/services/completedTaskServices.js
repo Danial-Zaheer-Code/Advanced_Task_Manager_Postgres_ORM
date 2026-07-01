@@ -56,6 +56,7 @@ export async function isCompletedToday(userId, taskId){
             where: {
                 id: taskId,
                 userId: userId,
+                isDeleted: false,
                 completedTasks: {
                     some: {
                         completedAt: { 

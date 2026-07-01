@@ -188,43 +188,42 @@ export async function getAllTasks(req,res) {
 // }
 
 
-// export async function changeStatus(req, res) {
-//     try {
-//         const status = req.body.status.toLowerCase();
+export async function changeStatus(req, res) {
+    try {
+        const status = req.body.status.toUpperCase();
 
-//         if(status != "active" && status != "inactive"){
-//             res.status(400).json({
-//                 success: false,
-//                 message: "Wrong status"
-//             });
-//         }
+        if(status != "ACTIVE" && status != "INACTIVE"){
+            res.status(400).json({
+                success: false,
+                message: "Wrong status"
+            });
+        }
 
-//         const isExist = await taskServices.isTaskExistsWithId(req.body.id) 
-//         if (!isExist) {
-//             return res.status(409).json({
-//                 success: false,
-//                 message: "Task Does not Exist"
-//             });
-//         }
+        if (!await taskServices.isTaskExistsWithId(req.userId, req.body.id)) {
+            return res.status(409).json({
+                success: false,
+                message: "Task Does not Exist"
+            });
+        }
 
-//         const hasChanged = await taskServices.changeStatusDB(req.body.id, status);
+        const hasChanged = await taskServices.changeStatusDB(req.body.id, status);
 
-//         if(!hasChanged){
-//             return res.status(200).json({
-//                 success: true,
-//                 message: `Status is alrady ${status}`
-//             })
-//         }
+        if(!hasChanged){
+            return res.status(200).json({
+                success: true,
+                message: `Status is alrady ${status}`
+            })
+        }
 
-//         return res.status(200).json({
-//                 success: true,
-//                 message: "Task Status updated successfully"
-//             });
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//                 success: false,
-//                 message: "Something went wrong. Try again later"
-//         });
-//     }
-// }
+        return res.status(200).json({
+                success: true,
+                message: "Task Status updated successfully"
+            });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+                success: false,
+                message: "Something went wrong. Try again later"
+        });
+    }
+}
