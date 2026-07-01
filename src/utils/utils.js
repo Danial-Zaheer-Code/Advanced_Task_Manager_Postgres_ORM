@@ -51,3 +51,14 @@ const days = {
 export function getTodayName(){
     return days[new Date().getDay()];
 }
+
+
+export function getTodayRange(){
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    return [startOfToday, endOfToday]
+}

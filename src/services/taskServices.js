@@ -1,5 +1,6 @@
+import { connect } from "node:http2";
 import { prisma } from "../lib/prisma.js";
-import { getTodayName } from "../utils/utils.js";
+import { getTodayName, getTodayRange } from "../utils/utils.js";
 
 export async function isTaskExists(userId, title) {
     try {
@@ -17,11 +18,11 @@ export async function isTaskExists(userId, title) {
     }
 }
 
-export async function isTaskExistsWithId(userId, id) {
+export async function isTaskExistsWithId(userId, taskId) {
     try {
         const task = await prisma.task.findFirst({
             where: {
-                id: id,
+                id: taskId,
                 isDeleted: false,
                 userId: userId
             }
@@ -53,11 +54,11 @@ export async function addTaskDB(userId, task) {
     }
 }
 
-export async function deleteTaskDB(userId, id) {
+export async function deleteTaskDB(userId, taskId) {
     try {
         await prisma.task.delete({
             where: {
-                id: id,
+                id: taskId,
                 userId: userId
             }
         })
@@ -68,11 +69,7 @@ export async function deleteTaskDB(userId, id) {
 
 export async function getTodayTasksDB(userId) {
     try {
-        const startOfToday = new Date();
-        startOfToday.setHours(0, 0, 0, 0);
-
-        const endOfToday = new Date();
-        endOfToday.setHours(23, 59, 59, 999);
+        const [startOfToday, endOfToday] = getTodayRange(); 
 
         const today = getTodayName();
 
@@ -103,28 +100,11 @@ export async function getTodayTasksDB(userId) {
                 },
             },
         });
-
         return tasks;
     } catch (error) {
         throw error;
     }
 }
-
-// export async function changeStatusDB(id, status) {
-//     try {
-//         const [result] = await connectionPool.query(`
-//         UPDATE tasks
-//         SET task_status=?
-//         WHERE id=?
-//         AND task_status <> ?
-//         `, [status, id, status]);
-//         return result.affectedRows == 1;
-
-//     } catch (error) {
-//         throw error;
-//     }
-// }
-
 
 // export async function getCompletedTasksDB(userId) {
 //     try {
@@ -141,31 +121,72 @@ export async function getTodayTasksDB(userId) {
 //     }
 // }
 
-// export async function markCompletedDB(id){
-//     try {
-//         const [result] = await connectionPool.query(`
-//             INSERT IGNORE INTO tasks_completed(task_id)
-//             VALUES(?)
-//             `,[id]);
-//         return result.affectedRows == 1;
-//     } catch (error) {
-//         throw error;
-//     }
-// }
 
-// export async function isCompletedToday(id){
-//     try{
-//         const [result] = await connectionPool.query(`
-//             SELECT * FROM tasks_completed
-//             WHERE task_id = ?
-//             AND DATE(completion_date) = CURDATE();
-//         `, [id]);
+export async function isDueToday(userId, taskId){
+    try {
+        const today = getTodayName();
 
-//         return result.length == 1;
-//     } catch(error){
-//         throw error;
-//     }
-// }
+        const task = await prisma.task.findFirst({
+            where: {
+                id: taskId,
+                userId: userId,
+                isDeleted: false,
+                taskStatus: "ACTIVE",
+                repeatDays: {
+                    some: {
+                        day: today,
+                    },
+                },
+            }
+        });
+        return task != null;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function isCompletedToday(userId, taskId){
+    try{
+        const [startOfToday, endOfToday] = getTodayRange();
+        const task = await prisma.task.findFirst({
+            where: {
+                id: taskId,
+                userId: userId,
+                completedTasks: {
+                    some: {
+                        completedAt: { 
+                            gte: startOfToday,
+                            lte: endOfToday,
+                        }
+                    }   
+                }
+            }     
+        })
+
+        return task != null;
+    } catch(error){
+        throw error;
+    }
+}
+
+
+
+export async function markCompletedDB(taskId){
+    try {
+        const row = await prisma.completedTask.create({
+            data: {
+                task: {
+                    connect: {
+                        id:taskId
+                    }
+                }   
+            }
+        });
+    } catch (error) {
+        throw error;
+    }
+}
+
 
 // export async function getAllTasksDB(userId) {
 //     try {
@@ -178,6 +199,22 @@ export async function getTodayTasksDB(userId) {
 //         `);
 
 //         return result;
+//     } catch (error) {
+//         throw error;
+//     }
+// }
+
+
+// export async function changeStatusDB(id, status) {
+//     try {
+//         const [result] = await connectionPool.query(`
+//         UPDATE tasks
+//         SET task_status=?
+//         WHERE id=?
+//         AND task_status <> ?
+//         `, [status, id, status]);
+//         return result.affectedRows == 1;
+
 //     } catch (error) {
 //         throw error;
 //     }

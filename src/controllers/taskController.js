@@ -93,34 +93,41 @@ export async function getTodayTasks(req, res){
 //     }
 // }
 
-// export async function markCompleted(req, res){
-//     try {
-//         const isExist = await taskServices.isTaskExistsWithId(req.body.id);
+export async function markCompleted(req, res){
+    try {
+        if(!await taskServices.isTaskExistsWithId(req.userId,req.body.id)){
+            return res.status(409).json({
+                success: false,
+                message: "Task does not exist"
+            });
+        }
 
-//         if(!isExist){
-//             return res.status(408).json("Task does not exist");
-//         }
+        if(!await taskServices.isDueToday(req.userId, req.body.id)){
+            return res.status(409).json({
+                success: false,
+                message: "Not Due Today"
+            })
+        }
 
-//         const isCompleted = await taskServices.isCompletedToday(req.body.id);
-//         if(isCompleted){
-//             return res.status(409).json({
-//                 success: false,
-//                 message: "Already Completed"
-//         })
-//         }
-//         await taskServices.markCompletedDB(req.body.id);
-//         res.status(200).json({
-//                 success: true,
-//                 message: "Marked Completed Successfully"
-//         });
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//                 success: false,
-//                 message: "Something went wrong. Try again later"
-//         });
-//     }
-// }
+        if(await taskServices.isCompletedToday(req.userId, req.body.id)){
+            return res.status(409).json({
+                success: false,
+                message: "Already Completed"
+        })
+        }
+        await taskServices.markCompletedDB(req.body.id);
+        res.status(200).json({
+                success: true,
+                message: "Marked Completed Successfully"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+                success: false,
+                message: "Something went wrong. Try again later"
+        });
+    }
+}
 
 // export async function getAllTasks(req,res) {
 //     try {

@@ -80,11 +80,11 @@ router.get("/today",
 //     taskController.getCompletedTasks
 // )
 
-// router.patch("/markComplete",
-//     validateRequest,
-//     validateToken,
-//     taskController.markCompleted
-// )
+router.patch("/markComplete",
+    validateRequest,
+    validateToken,
+    taskController.markCompleted
+)
 
 // router.get("/all",
 //     validateRequest,
