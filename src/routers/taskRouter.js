@@ -7,6 +7,8 @@ export const router = express.Router();
 
 router.post("/add", 
     check("title")
+        .exists()
+        .withMessage("Task Title is Required")
         .notEmpty()
         .withMessage("Task Title is Required")
         .trim()
@@ -16,6 +18,11 @@ router.post("/add",
         .withMessage("Days to Repeat Tasks is compulsory")
         .isArray({ min: 1 })
         .withMessage('Array cannot be empty'),
+    check("priority")
+        .exists()
+        .withMessage("Priority is Required")
+        .notEmpty()
+        .withMessage("Priority is Required"),
     validateRequest,
     validateToken,
     taskController.addTask

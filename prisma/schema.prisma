@@ -24,12 +24,19 @@ enum TaskStatus {
   INACTIVE
 }
 
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 model Task{
   id Int @id @default(autoincrement())
   title String
   taskStatus TaskStatus @default(ACTIVE) @map("task_status")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @default(now()) @map("updated_at")
+  priority Priority @default(LOW)
   isDeleted Boolean @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at")
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -37,8 +44,6 @@ model Task{
 
   repeatDays TaskRepeatDay[]
   completedTasks CompletedTask[]
-
-  @@unique([userId, title])
   @@map("tasks")
 }
 

@@ -1,6 +1,6 @@
 import * as taskServices from "../services/taskServices.js"
 import * as completedTaskServices from "../services/completedTaskServices.js"
-import { convertToUpperCase, areValid } from "../utils/utils.js";
+import { convertToUpperCase, areValid, isValidPriority } from "../utils/utils.js";
 export async function addTask(req, res) {
     try {
         const userId = req.userId;
@@ -18,6 +18,14 @@ export async function addTask(req, res) {
                 success: false,
                 message: "Invalid weekdays"
             });
+        }
+
+        task.priority = task.priority.toUpperCase();
+        if(!isValidPriority(task.priority)){
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Priority"
+            })
         }
 
         await taskServices.addTaskDB(userId, task);
@@ -172,6 +180,14 @@ export async function editTask(req, res) {
                 success: false,
                 message: "Invalid weekdays"
             });
+        }
+
+        task.priority = task.priority.toUpperCase();
+        if(!isValidPriority(task.priority)){
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Priority"
+            })
         }
 
         await taskServices.editTask(req.userId, task);

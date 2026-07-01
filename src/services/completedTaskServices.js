@@ -17,7 +17,14 @@ export async function getCompletedTasksDB(userId) {
                     }
                 },
                 completedAt: true,
-            }
+            },
+            orderBy: [ 
+                {task: {
+                    priority: "desc"
+                }},
+                {completedAt: "desc"},
+            ]
+
         })
         return tasks;
     } catch (error) {
@@ -26,7 +33,7 @@ export async function getCompletedTasksDB(userId) {
 }
 
 
-export async function isDueToday(userId, taskId){
+export async function isDueToday(userId, taskId) {
     try {
         const today = getTodayName();
 
@@ -49,8 +56,8 @@ export async function isDueToday(userId, taskId){
     }
 }
 
-export async function isCompletedToday(userId, taskId){
-    try{
+export async function isCompletedToday(userId, taskId) {
+    try {
         const [startOfToday, endOfToday] = getTodayRange();
         const task = await prisma.task.findFirst({
             where: {
@@ -59,32 +66,32 @@ export async function isCompletedToday(userId, taskId){
                 isDeleted: false,
                 completedTasks: {
                     some: {
-                        completedAt: { 
+                        completedAt: {
                             gte: startOfToday,
                             lte: endOfToday,
                         }
-                    }   
+                    }
                 }
-            }     
+            }
         })
 
         return task != null;
-    } catch(error){
+    } catch (error) {
         throw error;
     }
 }
 
 
 
-export async function markCompletedDB(taskId){
+export async function markCompletedDB(taskId) {
     try {
         const row = await prisma.completedTask.create({
             data: {
                 task: {
                     connect: {
-                        id:taskId
+                        id: taskId
                     }
-                }   
+                }
             }
         });
     } catch (error) {

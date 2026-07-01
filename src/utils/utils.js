@@ -37,6 +37,10 @@ export function areValid(days){
     return true;
 }
 
+export function isValidPriority(priority){
+    return priority == "LOW" || priority == "MEDIUM" || priority == "HIGH";
+}
+
 const days = {
   0: "SUNDAY",
   1: "MONDAY",

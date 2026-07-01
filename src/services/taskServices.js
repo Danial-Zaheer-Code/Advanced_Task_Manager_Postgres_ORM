@@ -55,11 +55,15 @@ export async function addTaskDB(userId, task) {
 
 export async function deleteTaskDB(userId, taskId) {
     try {
-        await prisma.task.delete({
+        await prisma.task.update({
             where: {
                 id: taskId,
                 userId: userId,
                 isDeleted: false
+            },
+            data: {
+                isDeleted: true,
+                deletedAt: new Date()
             }
         })
     } catch (error) {
@@ -99,6 +103,10 @@ export async function getTodayTasksDB(userId) {
                     },
                 },
             },
+            orderBy: [
+                { priority: "desc" },
+                { createdAt: "desc" }
+            ]
         });
         return tasks;
     } catch (error) {
@@ -118,12 +126,18 @@ export async function getAllTasksDB(userId) {
                 id: true,
                 title: true,
                 taskStatus: true,
+                priority: true,
                 repeatDays: {
                     select: {
                         day: true
                     }
                 },
             },
+            orderBy: [
+                { priority: "desc" },
+                { createdAt: "desc" }
+            ]
+
         });
         return tasks;
     } catch (error) {
@@ -163,11 +177,12 @@ export async function editTask(userId, task) {
             },
             data: {
                 title: task.title,
+                priority: task.priority,
 
                 repeatDays: {
                     deleteMany: {},
                     create: task.repeatDays.map(day => {
-                        return { id: task.id, day: day };
+                        return { day: day };
                     })
                 }
             },
@@ -192,6 +207,21 @@ export async function isTitleTaken(userId, taskId, title) {
         })
 
         return task != null;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function isOnRepeat(userId, taskId) {
+    try {
+        const task = await prisma.task.findFirst({
+            where: {
+                id: taskId,
+                userId: userId,
+                isOnRepeat: true
+            }
+        })
+        return task != null
     } catch (error) {
         throw error;
     }
