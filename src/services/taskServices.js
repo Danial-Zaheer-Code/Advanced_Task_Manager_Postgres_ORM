@@ -1,4 +1,3 @@
-import { connect } from "node:http2";
 import { prisma } from "../lib/prisma.js";
 import { getTodayName, getTodayRange } from "../utils/utils.js";
 
@@ -101,87 +100,6 @@ export async function getTodayTasksDB(userId) {
             },
         });
         return tasks;
-    } catch (error) {
-        throw error;
-    }
-}
-
-// export async function getCompletedTasksDB(userId) {
-//     try {
-//         const [result] = await connectionPool.query(`
-//             SELECT t.id, t.title, DATE(c.completion_date) as completion_date
-//             FROM tasks t
-//             INNER JOIN tasks_completed c ON t.id = c.task_id
-//             WHERE t.user_id = ?
-//             AND t.is_deleted = 0;
-//             `, [userId])
-//         return result;
-//     } catch (error) {
-//         throw error;
-//     }
-// }
-
-
-export async function isDueToday(userId, taskId){
-    try {
-        const today = getTodayName();
-
-        const task = await prisma.task.findFirst({
-            where: {
-                id: taskId,
-                userId: userId,
-                isDeleted: false,
-                taskStatus: "ACTIVE",
-                repeatDays: {
-                    some: {
-                        day: today,
-                    },
-                },
-            }
-        });
-        return task != null;
-    } catch (error) {
-        throw error;
-    }
-}
-
-export async function isCompletedToday(userId, taskId){
-    try{
-        const [startOfToday, endOfToday] = getTodayRange();
-        const task = await prisma.task.findFirst({
-            where: {
-                id: taskId,
-                userId: userId,
-                completedTasks: {
-                    some: {
-                        completedAt: { 
-                            gte: startOfToday,
-                            lte: endOfToday,
-                        }
-                    }   
-                }
-            }     
-        })
-
-        return task != null;
-    } catch(error){
-        throw error;
-    }
-}
-
-
-
-export async function markCompletedDB(taskId){
-    try {
-        const row = await prisma.completedTask.create({
-            data: {
-                task: {
-                    connect: {
-                        id:taskId
-                    }
-                }   
-            }
-        });
     } catch (error) {
         throw error;
     }

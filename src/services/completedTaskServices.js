@@ -1,0 +1,92 @@
+import { prisma } from "../lib/prisma.js";
+import { getTodayName, getTodayRange } from "../utils/utils.js";
+
+export async function getCompletedTasksDB(userId) {
+    try {
+        const tasks = await prisma.completedTask.findMany({
+            where: {
+                task: {
+                    userId: userId
+                }
+            },
+            select: {
+                task: {
+                    select: {
+                        id: true,
+                        title: true
+                    }
+                },
+                completedAt: true,
+            }
+        })
+        return tasks;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+export async function isDueToday(userId, taskId){
+    try {
+        const today = getTodayName();
+
+        const task = await prisma.task.findFirst({
+            where: {
+                id: taskId,
+                userId: userId,
+                isDeleted: false,
+                taskStatus: "ACTIVE",
+                repeatDays: {
+                    some: {
+                        day: today,
+                    },
+                },
+            }
+        });
+        return task != null;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function isCompletedToday(userId, taskId){
+    try{
+        const [startOfToday, endOfToday] = getTodayRange();
+        const task = await prisma.task.findFirst({
+            where: {
+                id: taskId,
+                userId: userId,
+                completedTasks: {
+                    some: {
+                        completedAt: { 
+                            gte: startOfToday,
+                            lte: endOfToday,
+                        }
+                    }   
+                }
+            }     
+        })
+
+        return task != null;
+    } catch(error){
+        throw error;
+    }
+}
+
+
+
+export async function markCompletedDB(taskId){
+    try {
+        const row = await prisma.completedTask.create({
+            data: {
+                task: {
+                    connect: {
+                        id:taskId
+                    }
+                }   
+            }
+        });
+    } catch (error) {
+        throw error;
+    }
+}

@@ -74,11 +74,11 @@ router.get("/today",
 // )
 
 
-// router.get("/completed",
-//     validateRequest,
-//     validateToken,
-//     taskController.getCompletedTasks
-// )
+router.get("/completed",
+    validateRequest,
+    validateToken,
+    taskController.getCompletedTasks
+)
 
 router.patch("/markComplete",
     validateRequest,

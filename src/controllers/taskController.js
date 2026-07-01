@@ -1,4 +1,5 @@
 import * as taskServices from "../services/taskServices.js"
+import * as completedTaskServices from "../services/completedTaskServices.js"
 import { convertToUpperCase, areValid } from "../utils/utils.js";
 export async function addTask(req, res) {
     try {
@@ -77,21 +78,22 @@ export async function getTodayTasks(req, res){
     }
 }
 
-// export async function getCompletedTasks(req, res){
-//     try {
-//         const completedTasks = await taskServices.getCompletedTasksDB(req.userId);
-//         res.status(200).json({
-//                 success: true,
-//                 completedTasks: completedTasks
-//         });
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//                 success: false,
-//                 message: "Something went wrong. Try again later"
-//         });
-//     }
-// }
+export async function getCompletedTasks(req, res){
+    try {
+        const completedTasks = await completedTaskServices.getCompletedTasksDB(req.userId);
+        
+        res.status(200).json({
+                success: true,
+                completedTasks: completedTasks
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+                success: false,
+                message: "Something went wrong. Try again later"
+        });
+    }
+}
 
 export async function markCompleted(req, res){
     try {
@@ -102,20 +104,20 @@ export async function markCompleted(req, res){
             });
         }
 
-        if(!await taskServices.isDueToday(req.userId, req.body.id)){
+        if(!await completedTaskServices.isDueToday(req.userId, req.body.id)){
             return res.status(409).json({
                 success: false,
                 message: "Not Due Today"
             })
         }
 
-        if(await taskServices.isCompletedToday(req.userId, req.body.id)){
+        if(await completedTaskServices.isCompletedToday(req.userId, req.body.id)){
             return res.status(409).json({
                 success: false,
                 message: "Already Completed"
         })
         }
-        await taskServices.markCompletedDB(req.body.id);
+        await completedTaskServices.markCompletedDB(req.body.id);
         res.status(200).json({
                 success: true,
                 message: "Marked Completed Successfully"
