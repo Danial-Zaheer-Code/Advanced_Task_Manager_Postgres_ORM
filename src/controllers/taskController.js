@@ -148,44 +148,46 @@ export async function getAllTasks(req,res) {
 }
 
 
-// export async function editTask(req, res) {
-//     try {
-//         const task = req.body;
-//         const isExist = await taskServices.isTaskExistsWithId(task.id) 
-//         if (!isExist) {
-//             return res.status(408).json({
-//                 success: false,
-//                 message: "Task does not exist"
-//             });
-//         }
+export async function editTask(req, res) {
+    try {
+        const task = req.body;
+        const isExist = await taskServices.isTaskExistsWithId(req.userId, task.id) 
+        if (!isExist) {
+            return res.status(408).json({
+                success: false,
+                message: "Task does not exist"
+            });
+        }
 
-//         if(await taskServices.isTitleTaken(task.id, task.title)){
-//             res.status(409).json({
-//                 success: false,
-//                 message: "New Title Already Taken"
-//             })
-//         }
-//         if(!areValid(task.repeatDays)){
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "Invalid Weekdays"
-//             });
-//         }
-
-//         await taskServices.editTask(task);
-//         return res.status(200).json({
-//                 success: true,
-//                 message: "Edited Successfully"
-//             });
+        if(await taskServices.isTitleTaken(req.userId, task.id, task.title)){
+            res.status(409).json({
+                success: false,
+                message: "New Title Already Taken"
+            })
+        }
         
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//                 success: false,
-//                 message: "Something went wrong. Try again later"
-//         });    
-//     }
-// }
+        task.repeatDays = convertToUpperCase(task.repeatDays);
+        if(!areValid(task.repeatDays)){
+            return res.status(400).json({
+                success: false,
+                message: "Invalid weekdays"
+            });
+        }
+
+        await taskServices.editTask(req.userId, task);
+        return res.status(200).json({
+                success: true,
+                message: "Edited Successfully"
+            });
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+                success: false,
+                message: "Something went wrong. Try again later"
+        });    
+    }
+}
 
 
 export async function changeStatus(req, res) {
@@ -211,7 +213,7 @@ export async function changeStatus(req, res) {
         if(!hasChanged){
             return res.status(200).json({
                 success: true,
-                message: `Status is alrady ${status}`
+                message: `Status is already ${status}`
             })
         }
 

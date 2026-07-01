@@ -69,7 +69,7 @@ export async function deleteTaskDB(userId, taskId) {
 
 export async function getTodayTasksDB(userId) {
     try {
-        const [startOfToday, endOfToday] = getTodayRange(); 
+        const [startOfToday, endOfToday] = getTodayRange();
 
         const today = getTodayName();
 
@@ -89,7 +89,7 @@ export async function getTodayTasksDB(userId) {
                 title: true,
                 completedTasks: {
                     where: {
-                        completedAt: { 
+                        completedAt: {
                             gte: startOfToday,
                             lte: endOfToday,
                         },
@@ -139,7 +139,7 @@ export async function changeStatusDB(taskId, status) {
             where: {
                 id: taskId,
                 isDeleted: false,
-                NOT : {
+                NOT: {
                     taskStatus: status
                 }
             },
@@ -154,36 +154,46 @@ export async function changeStatusDB(taskId, status) {
     }
 }
 
-// export async function editTask(task){
-//     try {
-//         await connectionPool.query(`
-//             UPDATE tasks
-//             SET title=?
-//             WHERE id=?
-//         `,[task.title, task.id]);
+export async function editTask(userId, task) {
+    try {
+        await prisma.task.update({
+            where: {
+                id: task.id,
+                userId: task.userId,
+                isDeleted: false
+            },
+            data: {
+                title: task.title,
 
-//         await connectionPool.query(`
-//             DELETE FROM tasks_repeat
-//             WHERE task_id = ?
-//         `, [task.id]);
+                repeatDays: {
+                    deleteMany: {},
+                    create: task.repeatDays.map(day => {
+                        return { id: task.id, day: day };
+                    })
+                }
+            },
+        });
 
-//         const repeatDays = task.repeatDays.map(day => [task.id,day]);
-//         return await connectionPool.query(`
-//             INSERT INTO tasks_repeat(task_id, day_repeat)
-//             VALUES ?
-//         `, [repeatDays]);
+    } catch (error) {
+        throw error;
+    }
+}
 
-//     } catch (error) {
-//         throw error;
-//     }
-// }
+export async function isTitleTaken(userId, taskId, title) {
+    try {
+        const task = await prisma.task.findFirst({
+            where: {
+                isDeleted: false,
+                userId: userId,
+                title: title,
+                NOT: {
+                    id: taskId
+                }
+            }
+        })
 
-// export async function isTitleTaken(id, title){
-//     const [result] = await connectionPool.query(`
-//         SELECT * FROM tasks
-//         WHERE title=?
-//         AND id<>?
-//         AND is_deleted=0;
-//     `,[title, id])
-//     return result.length > 0;
-// }
+        return task != null;
+    } catch (error) {
+        throw error;
+    }
+}

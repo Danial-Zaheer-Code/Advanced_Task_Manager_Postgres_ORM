@@ -32,29 +32,27 @@ router.delete("/delete",
     taskController.deleteTask
 )
 
-
 router.get("/today",
     validateRequest,
     validateToken,
     taskController.getTodayTasks
 )
 
-// router.put("/edit",
-//     check("title")
-//         .notEmpty()
-//         .withMessage("Task Title is Required")
-//         .trim()
-//         .escape(),
-//     check("repeatDays")
-//         .exists()
-//         .withMessage("Days to Repeat Tasks is compulsory")
-//         .isArray({ min: 1 })
-//         .withMessage('Array cannot be empty'),
-//     validateRequest,
-//     validateToken,
-//     taskController.editTask
-// )
-
+router.put("/edit",
+    check("title")
+        .notEmpty()
+        .withMessage("Task Title is Required")
+        .trim()
+        .escape(),
+    check("repeatDays")
+        .exists()
+        .withMessage("Days to Repeat Tasks is compulsory")
+        .isArray({ min: 1 })
+        .withMessage('Array cannot be empty'),
+    validateRequest,
+    validateToken,
+    taskController.editTask
+)
 
 router.patch("/status",
     check("id")
