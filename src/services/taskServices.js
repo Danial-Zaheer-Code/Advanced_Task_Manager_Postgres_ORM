@@ -134,7 +134,6 @@ export async function getAllTasksDB(userId) {
 
 export async function changeStatusDB(taskId, status) {
     try {
-        console.log(taskId, status);
         const updatedtasks = await prisma.task.updateMany({
             where: {
                 id: taskId,
