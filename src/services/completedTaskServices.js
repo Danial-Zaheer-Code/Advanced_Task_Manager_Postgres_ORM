@@ -13,16 +13,19 @@ export async function getCompletedTasksDB(userId) {
                 task: {
                     select: {
                         id: true,
-                        title: true
+                        title: true,
+                        description: true
                     }
                 },
                 completedAt: true,
             },
-            orderBy: [ 
-                {task: {
-                    priority: "desc"
-                }},
-                {completedAt: "desc"},
+            orderBy: [
+                {
+                    task: {
+                        priority: "desc"
+                    }
+                },
+                { completedAt: "desc" },
             ]
 
         })
@@ -37,17 +40,28 @@ export async function isDueToday(userId, taskId) {
     try {
         const today = getTodayName();
 
+        const [startOfToday, endOfToday] = getTodayRange()
         const task = await prisma.task.findFirst({
             where: {
                 id: taskId,
                 userId: userId,
                 isDeleted: false,
                 taskStatus: "ACTIVE",
-                repeatDays: {
-                    some: {
-                        day: today,
+                OR: [
+                    {
+                        repeatDays: {
+                            some: {
+                                day: today,
+                            },
+                        },
                     },
-                },
+                    {
+                        dueDate: {
+                            gte: startOfToday,
+                            lte: endOfToday
+                        }
+                    }
+                ]
             }
         });
         return task != null;
@@ -80,8 +94,6 @@ export async function isCompletedToday(userId, taskId) {
         throw error;
     }
 }
-
-
 
 export async function markCompletedDB(taskId) {
     try {

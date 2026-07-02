@@ -109,7 +109,8 @@ export async function markCompleted(req, res) {
             })
         }
         await completedTaskServices.markCompletedDB(req.body.id);
-        res.status(200).json({
+
+        return res.status(200).json({
             success: true,
             message: "Marked Completed Successfully"
         });
