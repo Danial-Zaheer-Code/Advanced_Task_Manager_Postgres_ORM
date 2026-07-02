@@ -39,6 +39,10 @@ export function constructDataObject(task){
             data.description = task.description
         }
 
+        if(task.status){
+            data.taskStatus = task.status
+        }
+
         if (task.repeatDays && task.repeatDays.count != 0) {
             data.repeatDays = {
                 deleteMany: {},

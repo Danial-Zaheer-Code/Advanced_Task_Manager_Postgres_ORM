@@ -4,7 +4,7 @@ import { validateRequest } from "../middleware/requestValidation.js";
 import { validateToken } from "../middleware/tokenValidation.js";
 import * as taskController from "../controllers/taskController.js"
 import { convertToUpperCase } from "../utils/utils.js";
-import { areValid, isValidPriority } from "../middleware/requestValidation.js";
+import { areValid, isValidPriority, isValidStatus } from "../middleware/requestValidation.js";
 export const router = express.Router();
 
 router.post("/add", 
@@ -69,25 +69,16 @@ router.put("/edit",
         .toUpperCase()
         .custom(isValidPriority)
         .withMessage("Invalid Priority"),
+    check("status")
+        .optional()
+        .isString()
+        .withMessage("Status must be a string")
+        .toUpperCase()
+        .custom(isValidStatus)
+        .withMessage("Invalid Status"),
     validateRequest,
     validateToken,
     taskController.editTask
-)
-
-router.patch("/status",
-    check("id")
-        .exists()
-        .withMessage("Id is rquired")
-        .isNumeric()
-        .withMessage("Id must be a number"),
-    check("status")
-        .exists()
-        .withMessage("Status is required")
-        .isString()
-        .withMessage("Status must be a string"),
-    validateRequest,
-    validateToken,
-    taskController.changeStatus
 )
 
 router.delete("/delete",

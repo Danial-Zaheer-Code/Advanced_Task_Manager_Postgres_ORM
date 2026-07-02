@@ -150,28 +150,6 @@ export async function getAllTasksDB(userId) {
     }
 }
 
-
-export async function changeStatusDB(taskId, status) {
-    try {
-        const updatedtasks = await prisma.task.updateMany({
-            where: {
-                id: taskId,
-                isDeleted: false,
-                NOT: {
-                    taskStatus: status
-                }
-            },
-            data: {
-                taskStatus: status
-            }
-        })
-
-        return updatedtasks.count > 0;
-    } catch (error) {
-        throw error;
-    }
-}
-
 export async function editTask(userId, task) {
     try {
         const data = constructDataObject(task);

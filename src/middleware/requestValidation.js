@@ -25,3 +25,7 @@ export function areValid(days){
 export function isValidPriority(priority){
     return priority == "LOW" || priority == "MEDIUM" || priority == "HIGH";
 }
+
+export function isValidStatus(status){
+    return status == "ACTIVE" || status == "INACTIVE"
+}
