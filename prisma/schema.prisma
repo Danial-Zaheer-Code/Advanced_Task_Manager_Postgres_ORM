@@ -37,6 +37,7 @@ model Task{
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @default(now()) @map("updated_at")
   priority Priority @default(LOW)
+  description String?
   isDeleted Boolean @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at")
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -62,7 +63,6 @@ model TaskRepeatDay{
   day Day
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskId Int @map("task_id")
-
   @@map("task_repeat_days")
 }
 
