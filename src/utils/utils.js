@@ -22,15 +22,3 @@ const weekdays = Array.from({ length: 7 }, (_, i) => {
     return new Intl.DateTimeFormat("en-US", { weekday: 'long' }).format(date).toUpperCase();
   });
 
-export function areValid(days){
-    for(let i = 0; i < days.length; i++){
-        if(!weekdays.includes(days[i])){
-            return false;
-        }
-    }
-    return true;
-}
-
-export function isValidPriority(priority){
-    return priority == "LOW" || priority == "MEDIUM" || priority == "HIGH";
-}

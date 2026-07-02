@@ -1,6 +1,5 @@
 import * as taskServices from "../services/taskServices.js"
 import * as completedTaskServices from "../services/completedTaskServices.js"
-import { convertToUpperCase, areValid, isValidPriority } from "../utils/utils.js";
 export async function addTask(req, res) {
     try {
         const userId = req.userId;

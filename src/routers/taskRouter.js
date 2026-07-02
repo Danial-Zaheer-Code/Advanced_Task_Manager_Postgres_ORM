@@ -3,7 +3,8 @@ import { check } from "express-validator";
 import { validateRequest } from "../middleware/requestValidation.js";
 import { validateToken } from "../middleware/tokenValidation.js";
 import * as taskController from "../controllers/taskController.js"
-import { convertToUpperCase, areValid, isValidPriority } from "../utils/utils.js";
+import { convertToUpperCase } from "../utils/utils.js";
+import { areValid, isValidPriority } from "../middleware/requestValidation.js";
 export const router = express.Router();
 
 router.post("/add", 
