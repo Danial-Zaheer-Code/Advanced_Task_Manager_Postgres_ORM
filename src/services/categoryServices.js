@@ -48,7 +48,6 @@ async function getCategory(whereClause){
         const category = await prisma.category.findFirst({
             where: whereClause
         })
-        console.log(category);
         return category;
     } catch (error) {
         throw error;
