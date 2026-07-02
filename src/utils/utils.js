@@ -16,9 +16,3 @@ export async function compare(inputPassword, storedHashedPassword) {
 export function convertToUpperCase(strings){
     return strings.map(str => str.trim().toUpperCase());
 }
-
-const weekdays = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(2023, 0, i + 1); // Jan 1, 2023 was a Sunday
-    return new Intl.DateTimeFormat("en-US", { weekday: 'long' }).format(date).toUpperCase();
-  });
-

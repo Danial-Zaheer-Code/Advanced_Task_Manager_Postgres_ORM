@@ -40,6 +40,7 @@ export async function addTaskDB(userId, task) {
                 title: task.title,
                 priority: task.priority,
                 description: task.description ?? "",
+                dueDate: task.dueDate ?? null,
                 user: {
                     connect: {
                         id: userId

@@ -4,7 +4,7 @@ import { validateRequest } from "../middleware/requestValidation.js";
 import { validateToken } from "../middleware/tokenValidation.js";
 import * as taskController from "../controllers/taskController.js"
 import { convertToUpperCase } from "../utils/utils.js";
-import { areValid, isValidPriority, isValidStatus } from "../middleware/requestValidation.js";
+import { areValid, isValidPriority, isValidStatus, isValidDueDate } from "../middleware/requestValidation.js";
 export const router = express.Router();
 
 router.post("/add", 
@@ -35,6 +35,13 @@ router.post("/add",
         .toUpperCase()
         .custom(isValidPriority)
         .withMessage("Invalid Priority"),
+    check("dueDate")
+        .optional()
+        .isISO8601()
+        .withMessage("Due Date must be a valid date")
+        .toDate()
+        .custom(isValidDueDate)
+        .withMessage("Due date can't be in the past"),
     validateRequest,
     validateToken,
     taskController.addTask
