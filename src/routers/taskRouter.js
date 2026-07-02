@@ -20,10 +20,10 @@ router.post("/add",
         .trim()
         .escape(),
     check("repeatDays")
-        .exists()
-        .withMessage("Days to Repeat Tasks are required")
-        .isArray({ min: 1 })
-        .withMessage('Days to Repeat Tasks are required')
+        .optional()
+        .customSanitizer(repeatDays => {
+            return repeatDays ?? [];
+        })
         .customSanitizer(convertToUpperCase)
         .custom(areValid)
         .withMessage("Invalid day name"),

@@ -47,7 +47,7 @@ export async function addTaskDB(userId, task) {
                     }
                 },
                 repeatDays: {
-                    create: task.repeatDays.map(day => ({ day }))
+                    create: task.repeatDays ? task.repeatDays.map(day => ({ day })) : []
                 }
             }
         })
@@ -133,6 +133,7 @@ export async function getAllTasksDB(userId) {
                 taskStatus: true,
                 priority: true,
                 description: true,
+                dueDate: true,
                 repeatDays: {
                     select: {
                         day: true
