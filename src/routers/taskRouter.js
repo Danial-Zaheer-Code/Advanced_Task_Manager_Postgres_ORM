@@ -3,59 +3,71 @@ import { check } from "express-validator";
 import { validateRequest } from "../middleware/requestValidation.js";
 import { validateToken } from "../middleware/tokenValidation.js";
 import * as taskController from "../controllers/taskController.js"
+import { convertToUpperCase, areValid, isValidPriority } from "../utils/utils.js";
 export const router = express.Router();
 
 router.post("/add", 
     check("title")
         .exists()
         .withMessage("Task Title is Required")
+        .isString()
+        .withMessage("Title Must be a string")
+        .isString()
+        .withMessage("Title Must be a string")
         .notEmpty()
         .withMessage("Task Title is Required")
         .trim()
         .escape(),
     check("repeatDays")
         .exists()
-        .withMessage("Days to Repeat Tasks is compulsory")
+        .withMessage("Days to Repeat Tasks are required")
         .isArray({ min: 1 })
-        .withMessage('Array cannot be empty'),
+        .withMessage('Days to Repeat Tasks are required')
+        .customSanitizer(convertToUpperCase)
+        .custom(areValid)
+        .withMessage("Invalid day name"),
     check("priority")
         .exists()
         .withMessage("Priority is Required")
-        .notEmpty()
-        .withMessage("Priority is Required"),
+        .isString()
+        .withMessage("Priority must be a string")
+        .toUpperCase()
+        .custom(isValidPriority)
+        .withMessage("Invalid Priority"),
     validateRequest,
     validateToken,
     taskController.addTask
 )
 
-router.delete("/delete",
-    check("id")
-    .exists()
-    .withMessage("id is required")
-    .isNumeric()
-    .withMessage("id must be a number"),
-    validateRequest,
-    validateToken,
-    taskController.deleteTask
-)
-
-router.get("/today",
-    validateRequest,
-    validateToken,
-    taskController.getTodayTasks
-)
-
 router.put("/edit",
+    check("id")
+        .exists()
+        .withMessage("Id is required")
+        .isNumeric()
+        .withMessage("Id must be a number"),
     check("title")
+        .optional()
+        .isString()
+        .withMessage("Title Must be a string")
         .notEmpty()
-        .withMessage("Task Title is Required")
+        .withMessage("New Title Can't be empty")
         .trim()
         .escape(),
     check("repeatDays")
-        .exists()
-        .withMessage("Days to Repeat Tasks is compulsory")
+        .optional()
         .isArray({ min: 1 })
-        .withMessage('Array cannot be empty'),
+        .withMessage('Array cannot be empty')
+        .customSanitizer(convertToUpperCase)
+        .custom(areValid)
+        .withMessage("Invalid day name"),
+    check("priority")
+        .optional()
+        .isString()
+        .withMessage("Priority must be a string")
+        .trim()
+        .toUpperCase()
+        .custom(isValidPriority)
+        .withMessage("Invalid Priority"),
     validateRequest,
     validateToken,
     taskController.editTask
@@ -75,6 +87,23 @@ router.patch("/status",
     validateRequest,
     validateToken,
     taskController.changeStatus
+)
+
+router.delete("/delete",
+    check("id")
+    .exists()
+    .withMessage("id is required")
+    .isNumeric()
+    .withMessage("id must be a number"),
+    validateRequest,
+    validateToken,
+    taskController.deleteTask
+)
+
+router.get("/today",
+    validateRequest,
+    validateToken,
+    taskController.getTodayTasks
 )
 
 

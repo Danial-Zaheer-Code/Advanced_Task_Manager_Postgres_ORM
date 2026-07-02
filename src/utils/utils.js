@@ -13,15 +13,9 @@ export async function compare(inputPassword, storedHashedPassword) {
 	return await bcrypt.compare(inputPassword, storedHashedPassword);
 }
 
-
 export function convertToUpperCase(strings){
     return strings.map(str => str.trim().toUpperCase());
 }
-
-
-
-
-
 
 const weekdays = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(2023, 0, i + 1); // Jan 1, 2023 was a Sunday
@@ -65,4 +59,29 @@ export function getTodayRange(){
     endOfToday.setHours(23, 59, 59, 999);
 
     return [startOfToday, endOfToday]
+}
+
+export function constructDataObject(task){
+    const data = {}
+        if (task.title) {
+            data.title = task.title
+        }
+
+        if (task.priority) {
+            data.priority = task.priority
+        }
+
+        if (task.description) {
+            data.description = task.description
+        }
+
+        if (task.repeatDays && task.repeatDays.count != 0) {
+            data.repeatDays = {
+                deleteMany: {},
+                create: task.repeatDays.map(day => {
+                    return { day: day };
+                })
+            }
+        }
+    return data;
 }

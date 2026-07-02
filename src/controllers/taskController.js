@@ -12,39 +12,23 @@ export async function addTask(req, res) {
             });
         }
 
-        task.repeatDays = convertToUpperCase(task.repeatDays);
-        if(!areValid(task.repeatDays)){
-            return res.status(400).json({
-                success: false,
-                message: "Invalid weekdays"
-            });
-        }
-
-        task.priority = task.priority.toUpperCase();
-        if(!isValidPriority(task.priority)){
-            return res.status(400).json({
-                success: false,
-                message: "Invalid Priority"
-            })
-        }
-
         await taskServices.addTaskDB(userId, task);
         return res.status(201).json({
-                success: true,
-                message: "Task created successfully"
-            });
+            success: true,
+            message: "Task created successfully"
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-                success: false,
-                message: "Something went wrong. Try again later"
-            });
+            success: false,
+            message: "Something went wrong. Try again later"
+        });
     }
 }
 
 export async function deleteTask(req, res) {
     try {
-        if(!await taskServices.isTaskExistsWithId(req.userId, req.body.id)){
+        if (!await taskServices.isTaskExistsWithId(req.userId, req.body.id)) {
             return res.status(409).json({
                 success: false,
                 message: "Task does not exists"
@@ -53,19 +37,19 @@ export async function deleteTask(req, res) {
 
         await taskServices.deleteTaskDB(req.userId, req.body.id);
         return res.status(200).json({
-                success: true,
-                message: "Task deleted successfully"
-            });
+            success: true,
+            message: "Task deleted successfully"
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-                success: false,
-                message: "Something went wrong. Try again later"
+            success: false,
+            message: "Something went wrong. Try again later"
         });
     }
 }
 
-export async function getTodayTasks(req, res){
+export async function getTodayTasks(req, res) {
     try {
         let tasks = await taskServices.getTodayTasksDB(req.userId);
         tasks = tasks.map(task => {
@@ -74,83 +58,83 @@ export async function getTodayTasks(req, res){
             return task;
         })
         res.status(200).json({
-                success: true,
-                tasks: tasks
+            success: true,
+            tasks: tasks
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-                success: false,
-                message: "Something went wrong. Try again later"
+            success: false,
+            message: "Something went wrong. Try again later"
         });
     }
 }
 
-export async function getCompletedTasks(req, res){
+export async function getCompletedTasks(req, res) {
     try {
         const completedTasks = await completedTaskServices.getCompletedTasksDB(req.userId);
-        
+
         res.status(200).json({
-                success: true,
-                completedTasks: completedTasks
+            success: true,
+            completedTasks: completedTasks
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-                success: false,
-                message: "Something went wrong. Try again later"
+            success: false,
+            message: "Something went wrong. Try again later"
         });
     }
 }
 
-export async function markCompleted(req, res){
+export async function markCompleted(req, res) {
     try {
-        if(!await taskServices.isTaskExistsWithId(req.userId,req.body.id)){
+        if (!await taskServices.isTaskExistsWithId(req.userId, req.body.id)) {
             return res.status(409).json({
                 success: false,
                 message: "Task does not exist"
             });
         }
 
-        if(!await completedTaskServices.isDueToday(req.userId, req.body.id)){
+        if (!await completedTaskServices.isDueToday(req.userId, req.body.id)) {
             return res.status(409).json({
                 success: false,
                 message: "Not Due Today"
             })
         }
 
-        if(await completedTaskServices.isCompletedToday(req.userId, req.body.id)){
+        if (await completedTaskServices.isCompletedToday(req.userId, req.body.id)) {
             return res.status(409).json({
                 success: false,
                 message: "Already Completed"
-        })
+            })
         }
         await completedTaskServices.markCompletedDB(req.body.id);
         res.status(200).json({
-                success: true,
-                message: "Marked Completed Successfully"
+            success: true,
+            message: "Marked Completed Successfully"
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-                success: false,
-                message: "Something went wrong. Try again later"
+            success: false,
+            message: "Something went wrong. Try again later"
         });
     }
 }
 
-export async function getAllTasks(req,res) {
+export async function getAllTasks(req, res) {
     try {
         const allTasks = await taskServices.getAllTasksDB(req.userId);
         res.status(200).json({
-                success: true,
-                allTasks: allTasks
+            success: true,
+            allTasks: allTasks
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-                success: false,
-                message: "Something went wrong. Try again later"
+            success: false,
+            message: "Something went wrong. Try again later"
         });
     }
 }
@@ -159,49 +143,33 @@ export async function getAllTasks(req,res) {
 export async function editTask(req, res) {
     try {
         const task = req.body;
-        const isExist = await taskServices.isTaskExistsWithId(req.userId, task.id) 
-        if (!isExist) {
+
+        if (!await taskServices.isTaskExistsWithId(req.userId, task.id)) {
             return res.status(408).json({
                 success: false,
                 message: "Task does not exist"
             });
         }
 
-        if(await taskServices.isTitleTaken(req.userId, task.id, task.title)){
+        if (task.title && await taskServices.isTitleTaken(req.userId, task.id, task.title)) {
             res.status(409).json({
                 success: false,
                 message: "New Title Already Taken"
             })
         }
-        
-        task.repeatDays = convertToUpperCase(task.repeatDays);
-        if(!areValid(task.repeatDays)){
-            return res.status(400).json({
-                success: false,
-                message: "Invalid weekdays"
-            });
-        }
-
-        task.priority = task.priority.toUpperCase();
-        if(!isValidPriority(task.priority)){
-            return res.status(400).json({
-                success: false,
-                message: "Invalid Priority"
-            })
-        }
 
         await taskServices.editTask(req.userId, task);
         return res.status(200).json({
-                success: true,
-                message: "Edited Successfully"
-            });
-        
+            success: true,
+            message: "Edited Successfully"
+        });
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-                success: false,
-                message: "Something went wrong. Try again later"
-        });    
+            success: false,
+            message: "Something went wrong. Try again later"
+        });
     }
 }
 
@@ -210,7 +178,7 @@ export async function changeStatus(req, res) {
     try {
         const status = req.body.status.toUpperCase();
 
-        if(status != "ACTIVE" && status != "INACTIVE"){
+        if (status != "ACTIVE" && status != "INACTIVE") {
             res.status(400).json({
                 success: false,
                 message: "Wrong status"
@@ -226,7 +194,7 @@ export async function changeStatus(req, res) {
 
         const hasChanged = await taskServices.changeStatusDB(req.body.id, status);
 
-        if(!hasChanged){
+        if (!hasChanged) {
             return res.status(200).json({
                 success: true,
                 message: `Status is already ${status}`
@@ -234,14 +202,14 @@ export async function changeStatus(req, res) {
         }
 
         return res.status(200).json({
-                success: true,
-                message: "Task Status updated successfully"
-            });
+            success: true,
+            message: "Task Status updated successfully"
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-                success: false,
-                message: "Something went wrong. Try again later"
+            success: false,
+            message: "Something went wrong. Try again later"
         });
     }
 }

@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma.js";
-import { getTodayName, getTodayRange } from "../utils/utils.js";
+import { getTodayName, getTodayRange, constructDataObject } from "../utils/utils.js";
 
 export async function isTaskExists(userId, title) {
     try {
@@ -174,24 +174,14 @@ export async function changeStatusDB(taskId, status) {
 
 export async function editTask(userId, task) {
     try {
+        const data = constructDataObject(task);
         await prisma.task.update({
             where: {
                 id: task.id,
                 userId: task.userId,
                 isDeleted: false
             },
-            data: {
-                title: task.title,
-                priority: task.priority,
-                description: task.description ?? null,
-
-                repeatDays: {
-                    deleteMany: {},
-                    create: task.repeatDays.map(day => {
-                        return { day: day };
-                    })
-                }
-            },
+            data: data
         });
 
     } catch (error) {
