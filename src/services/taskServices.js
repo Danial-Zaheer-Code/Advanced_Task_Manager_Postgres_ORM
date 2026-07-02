@@ -39,6 +39,7 @@ export async function addTaskDB(userId, task) {
             data: {
                 title: task.title,
                 priority: task.priority,
+                description: task.description ?? "",
                 user: {
                     connect: {
                         id: userId
@@ -93,6 +94,7 @@ export async function getTodayTasksDB(userId) {
                 id: true,
                 title: true,
                 priority: true,
+                description: true,
                 completedTasks: {
                     where: {
                         completedAt: {
@@ -129,6 +131,7 @@ export async function getAllTasksDB(userId) {
                 title: true,
                 taskStatus: true,
                 priority: true,
+                description: true,
                 repeatDays: {
                     select: {
                         day: true
@@ -180,6 +183,7 @@ export async function editTask(userId, task) {
             data: {
                 title: task.title,
                 priority: task.priority,
+                description: task.description ?? null,
 
                 repeatDays: {
                     deleteMany: {},
@@ -209,21 +213,6 @@ export async function isTitleTaken(userId, taskId, title) {
         })
 
         return task != null;
-    } catch (error) {
-        throw error;
-    }
-}
-
-export async function isOnRepeat(userId, taskId) {
-    try {
-        const task = await prisma.task.findFirst({
-            where: {
-                id: taskId,
-                userId: userId,
-                isOnRepeat: true
-            }
-        })
-        return task != null
     } catch (error) {
         throw error;
     }
