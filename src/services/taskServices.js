@@ -82,15 +82,53 @@ export async function getTodayTasksDB(userId) {
 
         const tasks = await prisma.task.findMany({
             where: {
-                userId: userId,
+                userId,
                 isDeleted: false,
                 taskStatus: "ACTIVE",
-                repeatDays: {
-                    some: {
-                        day: today,
+
+                OR: [
+                    {
+                        AND: [
+                            {
+                                repeatDays: {
+                                    none: {},
+                                },
+                            },
+                            {
+                                dueDate: {
+                                    gte: startOfToday,
+                                    lte: endOfToday,
+                                },
+                            },
+                        ],
                     },
-                },
+
+                    {
+                        AND: [
+                            {
+                                repeatDays: {
+                                    some: {
+                                        day: today,
+                                    },
+                                },
+                            },
+                            {
+                                OR: [
+                                    {
+                                        dueDate: null,
+                                    },
+                                    {
+                                        dueDate: {
+                                            lte: endOfToday,
+                                        },
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
             },
+
             select: {
                 id: true,
                 title: true,
@@ -108,10 +146,11 @@ export async function getTodayTasksDB(userId) {
                     },
                 },
             },
+
             orderBy: [
                 { priority: "desc" },
-                { createdAt: "desc" }
-            ]
+                { createdAt: "desc" },
+            ],
         });
         return tasks;
     } catch (error) {
