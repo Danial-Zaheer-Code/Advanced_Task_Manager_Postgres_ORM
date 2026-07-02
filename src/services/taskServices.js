@@ -38,6 +38,7 @@ export async function addTaskDB(userId, task) {
         await prisma.task.create({
             data: {
                 title: task.title,
+                priority: task.priority,
                 user: {
                     connect: {
                         id: userId
@@ -91,6 +92,7 @@ export async function getTodayTasksDB(userId) {
             select: {
                 id: true,
                 title: true,
+                priority: true,
                 completedTasks: {
                     where: {
                         completedAt: {
