@@ -88,19 +88,10 @@ export async function getTodayTasksDB(userId) {
 
                 OR: [
                     {
-                        AND: [
-                            {
-                                repeatDays: {
-                                    none: {},
-                                },
-                            },
-                            {
-                                dueDate: {
-                                    gte: startOfToday,
-                                    lte: endOfToday,
-                                },
-                            },
-                        ],
+                        dueDate: {
+                            gte: startOfToday,
+                            lte: endOfToday,
+                        },
                     },
 
                     {
