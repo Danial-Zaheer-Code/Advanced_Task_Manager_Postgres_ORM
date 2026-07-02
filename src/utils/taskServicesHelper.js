@@ -43,13 +43,17 @@ export function constructDataObject(task){
             data.taskStatus = task.status
         }
 
-        if (task.repeatDays && task.repeatDays.count != 0) {
+        if (task.repeatDays) {
             data.repeatDays = {
                 deleteMany: {},
                 create: task.repeatDays.map(day => {
                     return { day: day };
                 })
             }
+        }
+
+        if(task.dueDate){
+            data.dueDate = task.dueDate;
         }
     return data;
 }

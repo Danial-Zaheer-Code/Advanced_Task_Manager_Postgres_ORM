@@ -63,8 +63,8 @@ router.put("/edit",
         .escape(),
     check("repeatDays")
         .optional()
-        .isArray({ min: 1 })
-        .withMessage('Array cannot be empty')
+        .isArray()
+        .withMessage('Repeat days must be an array')
         .customSanitizer(convertToUpperCase)
         .custom(areValid)
         .withMessage("Invalid day name"),
@@ -83,6 +83,13 @@ router.put("/edit",
         .toUpperCase()
         .custom(isValidStatus)
         .withMessage("Invalid Status"),
+    check("dueDate")
+        .optional()
+        .isISO8601()
+        .withMessage("Due Date must be a valid date")
+        .toDate()
+        .custom(isValidDueDate)
+        .withMessage("Due date can't be in the past"),
     validateRequest,
     validateToken,
     taskController.editTask
