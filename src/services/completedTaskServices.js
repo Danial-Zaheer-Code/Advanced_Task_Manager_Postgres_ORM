@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma.js";
-import { getTodayName, getTodayRange } from "../utils/utils.js";
+import { getTodayName, getTodayRange } from "../utils/taskServicesHelper.js";
 
 export async function getCompletedTasksDB(userId) {
     try {
