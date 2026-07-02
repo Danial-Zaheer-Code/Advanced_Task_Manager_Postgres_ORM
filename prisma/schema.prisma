@@ -38,6 +38,7 @@ model Task{
   updatedAt DateTime @updatedAt @default(now()) @map("updated_at")
   priority Priority @default(LOW)
   description String @default("")
+  dueDate DateTime?
   isDeleted Boolean @default(false) @map("is_deleted")
   deletedAt DateTime? @map("deleted_at")
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
