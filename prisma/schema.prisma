@@ -26,6 +26,8 @@ model Category {
   name String @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
+
+  @@map("categories")
 }
 
 enum TaskStatus {
