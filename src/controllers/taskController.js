@@ -1,8 +1,8 @@
 import * as taskServices from "../services/taskServices.js"
 import * as completedTaskServices from "../services/completedTaskServices.js"
+import * as categoryServices from "../services/categoryServices.js"
 export async function addTask(req, res) {
     try {
-        const userId = req.userId;
         const task = req.body;
         if (await taskServices.isTaskExists(req.userId, task.title)) {
             return res.status(409).json({
@@ -11,7 +11,17 @@ export async function addTask(req, res) {
             });
         }
 
-        await taskServices.addTaskDB(userId, task);
+        if(!task.categoryId){
+            task.categoryId = await categoryServices.getDefaultCategoryId(req.userId)
+        }
+        else if(!await categoryServices.isCategoryExistsWithId(req.userId, task.categoryId)){
+            return res.status(404).json({
+                success: false,
+                message: "Category Not Found"
+            })
+        }
+
+        await taskServices.addTaskDB(req.userId, task);
         return res.status(201).json({
             success: true,
             message: "Task created successfully"

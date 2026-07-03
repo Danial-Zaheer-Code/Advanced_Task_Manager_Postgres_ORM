@@ -34,6 +34,13 @@ export async function deleteCategory(req, res){
             });
         }
 
+        if(req.body.id == await categoryServices.getDefaultCategoryId(req.userId)){
+            return res.status(422).json({
+                success: false,
+                message: "Deleting default category is not allowed"
+            })
+        }
+
         await categoryServices.deleteCategory(req.userId, req.body.id);
 
         return res.status(200).json({

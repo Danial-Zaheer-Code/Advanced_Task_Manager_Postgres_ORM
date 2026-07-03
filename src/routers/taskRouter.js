@@ -42,6 +42,10 @@ router.post("/add",
         .toDate()
         .custom(isValidDueDate)
         .withMessage("Due date can't be in the past"),
+    check("categoryId")
+        .optional()
+        .isNumeric()
+        .withMessage("Category Id must be a number"),
     validateRequest,
     validateToken,
     taskController.addTask

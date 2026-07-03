@@ -18,6 +18,19 @@ export async function addCategoryDB(userId, categoryName) {
     }
 }
 
+export async function deleteCategory(userId, categoryId){
+    try {
+        await prisma.category.delete({
+            where: {
+                userId: userId,
+                id: categoryId
+            }
+        })
+    } catch (error) {
+        throw error
+    }
+}
+
 export async function isCategoryExists(userId, categoryName){
     const whereCaluse = {
         userId: userId,
@@ -37,19 +50,13 @@ export async function isCategoryExistsWithId(userId, categoryId){
 
 } 
 
-export async function deleteCategory(userId, categoryId){
-    try {
-        await prisma.category.delete({
-            where: {
-                userId: userId,
-                id: categoryId
-            }
-        })
-    } catch (error) {
-        throw error
-    }
-}
+export async function getDefaultCategoryId(userId){
+    const category = await getCategory({
+        name: "Tasks"
+    })
 
+    return category.id;
+}
 
 async function getCategory(whereClause){
     try {

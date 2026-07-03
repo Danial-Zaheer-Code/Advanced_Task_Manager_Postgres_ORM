@@ -1,37 +1,6 @@
+import { connect } from "node:http2";
 import { prisma } from "../lib/prisma.js";
 import { getTodayName, getTodayRange, constructDataObject } from "../utils/taskServicesHelper.js";
-
-export async function isTaskExists(userId, title) {
-    try {
-        const task = await prisma.task.findFirst({
-            where: {
-                title: title,
-                isDeleted: false,
-                userId: userId
-            }
-        })
-
-        return task != null;
-    } catch (error) {
-        throw error;
-    }
-}
-
-export async function isTaskExistsWithId(userId, taskId) {
-    try {
-        const task = await prisma.task.findFirst({
-            where: {
-                id: taskId,
-                isDeleted: false,
-                userId: userId
-            }
-        })
-
-        return task != null;
-    } catch (error) {
-        throw error;
-    }
-}
 
 export async function addTaskDB(userId, task) {
     try {
@@ -44,6 +13,11 @@ export async function addTaskDB(userId, task) {
                 user: {
                     connect: {
                         id: userId
+                    }
+                },
+                category: {
+                    connect: {
+                        id: task.categoryId
                     }
                 },
                 repeatDays: {
@@ -209,6 +183,38 @@ export async function isTitleTaken(userId, taskId, title) {
                 NOT: {
                     id: taskId
                 }
+            }
+        })
+
+        return task != null;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function isTaskExists(userId, title) {
+    try {
+        const task = await prisma.task.findFirst({
+            where: {
+                title: title,
+                isDeleted: false,
+                userId: userId
+            }
+        })
+
+        return task != null;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function isTaskExistsWithId(userId, taskId) {
+    try {
+        const task = await prisma.task.findFirst({
+            where: {
+                id: taskId,
+                isDeleted: false,
+                userId: userId
             }
         })
 
