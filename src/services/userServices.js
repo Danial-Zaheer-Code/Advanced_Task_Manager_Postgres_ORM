@@ -47,7 +47,7 @@ export async function getUserById(id) {
 }
 
 
-export async function isPhoneNumberExist(phoneNumber) {
+export async function  isPhoneNumberExist(phoneNumber) {
 	const user = await prisma.user.findUnique({
 		where: { phone: phoneNumber }
 	})
