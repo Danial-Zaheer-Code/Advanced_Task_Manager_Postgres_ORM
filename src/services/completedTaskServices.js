@@ -14,7 +14,12 @@ export async function getCompletedTasksDB(userId) {
                     select: {
                         id: true,
                         title: true,
-                        description: true
+                        description: true,
+                        category: {
+                            select: {
+                                name: true
+                            }
+                        }
                     }
                 },
                 completedAt: true,
