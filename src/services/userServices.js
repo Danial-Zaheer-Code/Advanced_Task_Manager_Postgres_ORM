@@ -9,7 +9,14 @@ export async function addUser(user) {
 				password: user.password,
 				name: user.name,
 				phone: user.phone,
-				password: user.password
+				password: user.password,
+				categories: {
+					create: [
+						{
+							name: "Tasks"
+						}
+					]
+				}
 			}
 		})
 	} catch (error) {
@@ -20,7 +27,7 @@ export async function addUser(user) {
 export async function getUser(email) {
 	try {
 		const user = await prisma.user.findUnique({
-			where: {email:email}
+			where: { email: email }
 		})
 		return user;
 	} catch (error) {
@@ -31,7 +38,7 @@ export async function getUser(email) {
 export async function getUserById(id) {
 	try {
 		const user = await prisma.user.findUnique({
-			where: {id:id}
+			where: { id: id }
 		})
 		return user;
 	} catch (error) {
@@ -40,9 +47,9 @@ export async function getUserById(id) {
 }
 
 
-export async function isPhoneNumberExist(phoneNumber){
+export async function isPhoneNumberExist(phoneNumber) {
 	const user = await prisma.user.findUnique({
-		where: {phone: phoneNumber}
+		where: { phone: phoneNumber }
 	})
 
 	return user != null;
