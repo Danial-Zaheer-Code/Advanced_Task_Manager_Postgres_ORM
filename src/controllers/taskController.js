@@ -4,13 +4,7 @@ import * as categoryServices from "../services/categoryServices.js"
 export async function addTask(req, res) {
     try {
         const task = req.body;
-        if (await taskServices.isTaskExists(req.userId, task.title)) {
-            return res.status(409).json({
-                success: false,
-                message: "Task already exists"
-            });
-        }
-
+        
         if(!task.categoryId){
             task.categoryId = await categoryServices.getDefaultCategoryId(req.userId)
         }
@@ -19,6 +13,13 @@ export async function addTask(req, res) {
                 success: false,
                 message: "Category Not Found"
             })
+        }
+
+        if (await taskServices.isTaskExists(req.userId, task.title, task.categoryId)) {
+            return res.status(409).json({
+                success: false,
+                message: "Task already exists"
+            });
         }
 
         await taskServices.addTaskDB(req.userId, task);

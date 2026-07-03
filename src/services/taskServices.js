@@ -174,52 +174,46 @@ export async function editTask(userId, task) {
 }
 
 export async function isTitleTaken(userId, taskId, title) {
-    try {
-        const task = await prisma.task.findFirst({
-            where: {
-                isDeleted: false,
-                userId: userId,
-                title: title,
-                NOT: {
-                    id: taskId
-                }
-            }
-        })
-
-        return task != null;
-    } catch (error) {
-        throw error;
+    const whereCaluse = {
+        isDeleted: false,
+        userId: userId,
+        title: title,
+        NOT: {
+            id: taskId
+        }
     }
+
+    return await getTask(whereClause) != null;
 }
 
-export async function isTaskExists(userId, title) {
-    try {
-        const task = await prisma.task.findFirst({
-            where: {
-                title: title,
-                isDeleted: false,
-                userId: userId
-            }
-        })
-
-        return task != null;
-    } catch (error) {
-        throw error;
+export async function isTaskExists(userId, title, categoryId) {
+    const whereClause = {
+        title: title,
+        isDeleted: false,
+        userId: userId,
+        categoryId: categoryId
     }
+
+    return await getTask(whereClause) != null;
 }
 
 export async function isTaskExistsWithId(userId, taskId) {
-    try {
-        const task = await prisma.task.findFirst({
-            where: {
-                id: taskId,
-                isDeleted: false,
-                userId: userId
-            }
-        })
+    const whereClause = {
+        id: taskId,
+        isDeleted: false,
+        userId: userId
+    }
 
-        return task != null;
+    return await getTask(whereClause) != null;
+}
+
+
+async function getTask(whereClause) {
+    try {
+        return await prisma.task.findFirst({
+            where: whereClause
+        })
     } catch (error) {
-        throw error;
+        throw error
     }
 }
