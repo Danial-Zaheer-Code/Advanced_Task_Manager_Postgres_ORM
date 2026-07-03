@@ -4,11 +4,11 @@ import * as categoryServices from "../services/categoryServices.js"
 export async function addTask(req, res) {
     try {
         const task = req.body;
-        
-        if(!task.categoryId){
+
+        if (!task.categoryId) {
             task.categoryId = await categoryServices.getDefaultCategoryId(req.userId)
         }
-        else if(!await categoryServices.isCategoryExistsWithId(req.userId, task.categoryId)){
+        else if (!await categoryServices.isCategoryExistsWithId(req.userId, task.categoryId)) {
             return res.status(404).json({
                 success: false,
                 message: "Category Not Found"
@@ -162,11 +162,19 @@ export async function editTask(req, res) {
             });
         }
 
-        if (task.title && await taskServices.isTitleTaken(req.userId, task.id, task.title)) {
-            res.status(409).json({
-                success: false,
-                message: "New Title Already Taken"
-            })
+        if (task.title) {
+            let categoryId = task.categoryId ?? 0;
+
+            if(categoryId == 0){
+                categoryId = taskServices.getCategoryId(req.userId, task.id)
+            }
+
+            if (await taskServices.isTitleTaken(req.userId, task.id, task.title, categoryId)) {
+                res.status(409).json({
+                    success: false,
+                    message: "New Title Already Taken"
+                })
+            }
         }
 
         await taskServices.editTask(req.userId, task);

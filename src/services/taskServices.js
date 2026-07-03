@@ -1,6 +1,8 @@
 import { connect } from "node:http2";
 import { prisma } from "../lib/prisma.js";
 import { getTodayName, getTodayRange, constructDataObject } from "../utils/taskServicesHelper.js";
+import { group } from "node:console";
+import { use } from "react";
 
 export async function addTaskDB(userId, task) {
     try {
@@ -99,6 +101,11 @@ export async function getTodayTasksDB(userId) {
                 title: true,
                 priority: true,
                 description: true,
+                category: {
+                    select: {
+                        name: true
+                    }
+                },
                 completedTasks: {
                     where: {
                         completedAt: {
@@ -138,6 +145,11 @@ export async function getAllTasksDB(userId) {
                 priority: true,
                 description: true,
                 dueDate: true,
+                category: {
+                    select: {
+                        name: true
+                    }
+                },
                 repeatDays: {
                     select: {
                         day: true
@@ -147,7 +159,8 @@ export async function getAllTasksDB(userId) {
             orderBy: [
                 { priority: "desc" },
                 { createdAt: "desc" }
-            ]
+            ],
+
 
         });
         return tasks;
@@ -173,11 +186,12 @@ export async function editTask(userId, task) {
     }
 }
 
-export async function isTitleTaken(userId, taskId, title) {
-    const whereCaluse = {
+export async function isTitleTaken(userId, taskId, title, categoryId) {
+    const whereClause = {
         isDeleted: false,
         userId: userId,
         title: title,
+        categoryId: categoryId,
         NOT: {
             id: taskId
         }
@@ -207,6 +221,14 @@ export async function isTaskExistsWithId(userId, taskId) {
     return await getTask(whereClause) != null;
 }
 
+export async function getCategoryId(userId, taskId) {
+    const task = await getTask({
+        id: taskId,
+        userId: userId
+    })   
+
+    return task.categoryId;
+}
 
 async function getTask(whereClause) {
     try {
@@ -217,3 +239,4 @@ async function getTask(whereClause) {
         throw error
     }
 }
+

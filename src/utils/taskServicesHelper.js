@@ -55,5 +55,9 @@ export function constructDataObject(task){
         if(task.dueDate){
             data.dueDate = task.dueDate;
         }
+
+        if(task.categoryId){
+            data.categoryId = task.categoryId
+        }
     return data;
 }
