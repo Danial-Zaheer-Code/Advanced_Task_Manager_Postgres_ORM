@@ -27,11 +27,6 @@ export async function isCategoryExists(userId, categoryName){
     return await getCategory(whereCaluse) != null
 }
 
-export async function deleteCategory(userId, categoryId){
-
-}
-
-
 export async function isCategoryExistsWithId(userId, categoryId){
         const whereCaluse = {
         userId: userId,
@@ -41,6 +36,19 @@ export async function isCategoryExistsWithId(userId, categoryId){
     return await getCategory(whereCaluse) != null
 
 } 
+
+export async function deleteCategory(userId, categoryId){
+    try {
+        await prisma.category.delete({
+            where: {
+                userId: userId,
+                id: categoryId
+            }
+        })
+    } catch (error) {
+        throw error
+    }
+}
 
 
 async function getCategory(whereClause){

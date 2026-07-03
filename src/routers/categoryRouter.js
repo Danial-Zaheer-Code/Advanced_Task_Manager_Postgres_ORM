@@ -20,3 +20,14 @@ router.post("/add",
     validateToken,
     categoryController.addCategory
 )
+
+router.delete("/delete",
+    check("id")
+    .exists()
+    .withMessage("Id is required")
+    .isNumeric()
+    .withMessage("Id must be a number"),
+    validateRequest,
+    validateToken,
+    categoryController.deleteCategory
+)
