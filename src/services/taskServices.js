@@ -90,6 +90,18 @@ export async function getTodayTasksDB(userId) {
                             },
                         ],
                     },
+                    {
+                        AND: [
+                            {
+                                repeatDays: {
+                                    none: {}
+                                }
+                            },
+                            {
+                                dueDate: null
+                            }
+                        ]
+                    }
                 ],
             },
 
