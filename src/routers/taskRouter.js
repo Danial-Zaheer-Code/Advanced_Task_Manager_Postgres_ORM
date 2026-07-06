@@ -131,6 +131,11 @@ router.get("/completed",
 )
 
 router.patch("/markComplete",
+    check("id")
+        .exists()
+        .withMessage("id is required")
+        .isNumeric()
+        .withMessage("id must be a number"),
     validateRequest,
     validateToken,
     taskController.markCompleted
