@@ -13,10 +13,8 @@ router.post("/add",
         .withMessage("Task Title is Required")
         .isString()
         .withMessage("Title Must be a string")
-        .isString()
-        .withMessage("Title Must be a string")
         .notEmpty()
-        .withMessage("Task Title is Required")
+        .withMessage("Task Title cannot be empty")
         .trim()
         .escape(),
     check("repeatDays")
