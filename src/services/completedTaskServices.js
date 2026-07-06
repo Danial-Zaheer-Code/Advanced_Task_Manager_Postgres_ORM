@@ -54,17 +54,45 @@ export async function isDueToday(userId, taskId) {
                 taskStatus: "ACTIVE",
                 OR: [
                     {
-                        repeatDays: {
-                            some: {
-                                day: today,
+                        AND: [
+                            {
+                                repeatDays: {
+                                    some: {
+                                        day: today,
+                                    },
+                                },
                             },
-                        },
+                            {
+                                OR: [
+                                    {
+                                        dueDate: {
+                                            lte: endOfToday
+                                        }
+                                    },
+                                    {
+                                        dueDate: null
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
                         dueDate: {
                             gte: startOfToday,
                             lte: endOfToday
                         }
+                    },
+                    {
+                        AND: [
+                            {
+                                dueDate: null
+                            },
+                            {
+                                repeatDays: {
+                                    none: {}
+                                }
+                            }
+                        ]
                     }
                 ]
             }
