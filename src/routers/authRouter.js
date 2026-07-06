@@ -48,9 +48,9 @@ router.post('/login',
         .normalizeEmail(),
     check("password")
         .exists()
-        .withMessage('Password is rewuired')
-        .notEmpty()
-        .withMessage("Password is required")
+        .withMessage('Password is required')
+        .isString()
+        .withMessage("Password must be a string")
         .isLength({ min: 8 })
         .withMessage("Must be at least 8 chars long"),
     validateRequest,
