@@ -1,8 +1,5 @@
-import { connect } from "node:http2";
 import { prisma } from "../lib/prisma.js";
 import { getTodayName, getTodayRange, constructDataObject } from "../utils/taskServicesHelper.js";
-import { group } from "node:console";
-import { use } from "react";
 
 export async function addTaskDB(userId, task) {
     try {
