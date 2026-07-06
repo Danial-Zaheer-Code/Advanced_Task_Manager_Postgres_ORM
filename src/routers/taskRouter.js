@@ -43,7 +43,10 @@ router.post("/add",
     check("categoryId")
         .optional()
         .isNumeric()
-        .withMessage("Category Id must be a number"),
+        .withMessage("Category Id must be a number")
+        .customSanitizer(id =>{
+            return Number(id)
+        }),
     validateRequest,
     validateToken,
     taskController.addTask
