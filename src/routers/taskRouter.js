@@ -7,7 +7,7 @@ import { convertToUpperCase } from "../utils/utils.js";
 import { areValid, isValidPriority, isValidStatus, isValidDueDate } from "../middleware/requestValidation.js";
 export const router = express.Router();
 
-router.post("/add", 
+router.post("/add",
     check("title")
         .exists()
         .withMessage("Task Title is Required")
@@ -17,14 +17,6 @@ router.post("/add",
         .withMessage("Task Title cannot be empty")
         .trim()
         .escape(),
-    check("repeatDays")
-        .optional()
-        .customSanitizer(repeatDays => {
-            return repeatDays ?? [];
-        })
-        .customSanitizer(convertToUpperCase)
-        .custom(areValid)
-        .withMessage("Invalid day name"),
     check("priority")
         .exists()
         .withMessage("Priority is Required")
@@ -33,6 +25,14 @@ router.post("/add",
         .toUpperCase()
         .custom(isValidPriority)
         .withMessage("Invalid Priority"),
+    check("repeatDays")
+        .optional()
+        .customSanitizer(repeatDays => {
+            return repeatDays ?? [];
+        })
+        .customSanitizer(convertToUpperCase)
+        .custom(areValid)
+        .withMessage("Invalid day name"),
     check("dueDate")
         .optional()
         .isISO8601()
@@ -40,11 +40,17 @@ router.post("/add",
         .toDate()
         .custom(isValidDueDate)
         .withMessage("Due date can't be in the past"),
+    check("description")
+        .optional()
+        .isString()
+        .withMessage("Description must be a string")
+        .trim()
+        .escape(),
     check("categoryId")
         .optional()
         .isNumeric()
         .withMessage("Category Id must be a number")
-        .customSanitizer(id =>{
+        .customSanitizer(id => {
             return Number(id)
         }),
     validateRequest,
@@ -102,10 +108,10 @@ router.put("/edit",
 
 router.delete("/delete",
     check("id")
-    .exists()
-    .withMessage("id is required")
-    .isNumeric()
-    .withMessage("id must be a number"),
+        .exists()
+        .withMessage("id is required")
+        .isNumeric()
+        .withMessage("id must be a number"),
     validateRequest,
     validateToken,
     taskController.deleteTask
