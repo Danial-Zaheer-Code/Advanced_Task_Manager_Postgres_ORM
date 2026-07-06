@@ -28,8 +28,8 @@ router.post('/register',
     check("password")
         .exists()
         .withMessage("Password is required")
-        .notEmpty()
-        .withMessage("Password is required")
+        .isString()
+        .withMessage("Password Must be a string")
         .isLength({ min: 8 })
         .withMessage("Password must be at least 8 chars long"),
     validateRequest,
