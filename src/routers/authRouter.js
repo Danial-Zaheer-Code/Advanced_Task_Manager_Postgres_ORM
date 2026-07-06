@@ -16,6 +16,8 @@ router.post('/register',
     check("name")
         .exists()
         .withMessage("Name is required")
+        .isString()
+        .withMessage("The name should be a stringAdde")
         .notEmpty()
         .withMessage("Name must not be empty")
         .trim()
