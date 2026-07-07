@@ -114,6 +114,10 @@ export async function markCompleted(req, res) {
         }
         await completedTaskServices.markCompletedDB(req.body.id);
 
+        if(!await taskServices.canRepeat(req.userId, req.body.id)){
+            await taskServices.deleteTaskDB(req.userId, req.body.id)
+        }
+
         return res.status(200).json({
             success: true,
             message: "Marked Completed Successfully"

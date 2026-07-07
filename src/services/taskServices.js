@@ -197,6 +197,20 @@ export async function isTaskExists(userId, taskId) {
     return tasks.length != 0;
 }
 
+export async function canRepeat(userId, taskId) {
+    const whereClause = {
+        id: taskId,
+        userId: userId,
+        isDeleted: false,
+        repeatDays: {
+            some: {}
+        }
+    }
+
+    const tasks = await getTasks(whereClause)
+    return tasks.length != 0
+}
+
 async function getTasks(whereClause) {
     try {
         return await prisma.task.findMany({
