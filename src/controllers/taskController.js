@@ -8,7 +8,7 @@ export async function addTask(req, res) {
         if (!task.categoryId) {
             task.categoryId = await categoryServices.getDefaultCategoryId(req.userId)
         }
-        else if (!await categoryServices.isCategoryExistsWithId(req.userId, task.categoryId)) {
+        else if (!await categoryServices.isCategoryExists(req.userId, task.categoryId)) {
             return res.status(404).json({
                 success: false,
                 message: "Category Not Found"

@@ -31,7 +31,7 @@ export async function deleteCategory(userId, categoryId){
     }
 }
 
-export async function isCategoryExists(userId, categoryName){
+export async function isCategoryNameTaken(userId, categoryName){
     const whereCaluse = {
         userId: userId,
         name: categoryName
@@ -40,7 +40,7 @@ export async function isCategoryExists(userId, categoryName){
     return await getCategory(whereCaluse) != null
 }
 
-export async function isCategoryExistsWithId(userId, categoryId){
+export async function isCategoryExists(userId, categoryId){
         const whereCaluse = {
         userId: userId,
         id: categoryId

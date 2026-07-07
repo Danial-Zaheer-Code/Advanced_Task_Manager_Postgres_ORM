@@ -2,7 +2,7 @@ import * as categoryServices from "../services/categoryServices.js"
 
 export async function addCategory(req, res){
     try {
-        if(await categoryServices.isCategoryExists(req.userId, req.body.name)){
+        if(await categoryServices.isCategoryNameTaken(req.userId, req.body.name)){
             return res.status(409).json({
                 success: false,
                 message: "Category already exists"
@@ -27,7 +27,7 @@ export async function addCategory(req, res){
 
 export async function deleteCategory(req, res){
     try {
-        if(!await categoryServices.isCategoryExistsWithId(req.userId, req.body.id)){
+        if(!await categoryServices.isCategoryExists(req.userId, req.body.id)){
             return res.status(404).json({
                 success: false,
                 message: "Category does not exists"
