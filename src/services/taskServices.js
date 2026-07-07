@@ -212,56 +212,49 @@ export async function isDueToday(userId, taskId) {
         const today = getTodayName();
 
         const [startOfToday, endOfToday] = getTodayRange()
+        const todayRange = {
+            gte: startOfToday,
+            lte: endOfToday,
+        };
+
         const task = await prisma.task.findFirst({
             where: {
                 id: taskId,
-                userId: userId,
+                userId,
                 isDeleted: false,
                 taskStatus: "ACTIVE",
+
                 OR: [
                     {
-                        AND: [
+                        repeatDays: {
+                            some: {
+                                day: today,
+                            },
+                        },
+                        OR: [
                             {
-                                repeatDays: {
-                                    some: {
-                                        day: today,
-                                    },
+                                dueDate: {
+                                    lte: endOfToday,
                                 },
                             },
                             {
-                                OR: [
-                                    {
-                                        dueDate: {
-                                            lte: endOfToday
-                                        }
-                                    },
-                                    {
-                                        dueDate: null
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        dueDate: {
-                            gte: startOfToday,
-                            lte: endOfToday
-                        }
-                    },
-                    {
-                        AND: [
-                            {
-                                dueDate: null
+                                dueDate: null,
                             },
-                            {
-                                repeatDays: {
-                                    none: {}
-                                }
-                            }
-                        ]
-                    }
-                ]
-            }
+                        ],
+                    },
+
+                    {
+                        dueDate: todayRange,
+                    },
+
+                    {
+                        dueDate: null,
+                        repeatDays: {
+                            none: {},
+                        },
+                    },
+                ],
+            },
         });
         return task != null;
     } catch (error) {
