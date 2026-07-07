@@ -99,7 +99,7 @@ export async function markCompleted(req, res) {
             });
         }
 
-        if (!await completedTaskServices.isDueToday(req.userId, req.body.id)) {
+        if (!await taskServices.isDueToday(req.userId, req.body.id)) {
             return res.status(409).json({
                 success: false,
                 message: "Not Due Today"
