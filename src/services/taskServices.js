@@ -195,32 +195,7 @@ export async function editTask(userId, task) {
     }
 }
 
-export async function isTitleTaken(userId, taskId, title, categoryId) {
-    const whereClause = {
-        isDeleted: false,
-        userId: userId,
-        title: title,
-        categoryId: categoryId,
-        NOT: {
-            id: taskId
-        }
-    }
-
-    return await getTask(whereClause) != null;
-}
-
-export async function isTaskExists(userId, title, categoryId) {
-    const whereClause = {
-        title: title,
-        isDeleted: false,
-        userId: userId,
-        categoryId: categoryId
-    }
-
-    return await getTask(whereClause) != null;
-}
-
-export async function isTaskExistsWithId(userId, taskId) {
+export async function isTaskExists(userId, taskId) {
     const whereClause = {
         id: taskId,
         isDeleted: false,

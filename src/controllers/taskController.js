@@ -15,13 +15,6 @@ export async function addTask(req, res) {
             })
         }
 
-        if (await taskServices.isTaskExists(req.userId, task.title, task.categoryId)) {
-            return res.status(409).json({
-                success: false,
-                message: "Task already exists"
-            });
-        }
-
         await taskServices.addTaskDB(req.userId, task);
         return res.status(201).json({
             success: true,
@@ -38,7 +31,7 @@ export async function addTask(req, res) {
 
 export async function deleteTask(req, res) {
     try {
-        if (!await taskServices.isTaskExistsWithId(req.userId, req.body.id)) {
+        if (!await taskServices.isTaskExists(req.userId, req.body.id)) {
             return res.status(409).json({
                 success: false,
                 message: "Task does not exists"
@@ -99,7 +92,7 @@ export async function getCompletedTasks(req, res) {
 
 export async function markCompleted(req, res) {
     try {
-        if (!await taskServices.isTaskExistsWithId(req.userId, req.body.id)) {
+        if (!await taskServices.isTaskExists(req.userId, req.body.id)) {
             return res.status(409).json({
                 success: false,
                 message: "Task does not exist"
@@ -155,26 +148,11 @@ export async function editTask(req, res) {
     try {
         const task = req.body;
 
-        if (!await taskServices.isTaskExistsWithId(req.userId, task.id)) {
+        if (!await taskServices.isTaskExists(req.userId, task.id)) {
             return res.status(408).json({
                 success: false,
                 message: "Task does not exist"
             });
-        }
-
-        if (task.title) {
-            let categoryId = task.categoryId ?? 0;
-
-            if(categoryId == 0){
-                categoryId = taskServices.getCategoryId(req.userId, task.id)
-            }
-
-            if (await taskServices.isTitleTaken(req.userId, task.id, task.title, categoryId)) {
-                res.status(409).json({
-                    success: false,
-                    message: "New Title Already Taken"
-                })
-            }
         }
 
         await taskServices.editTask(req.userId, task);
