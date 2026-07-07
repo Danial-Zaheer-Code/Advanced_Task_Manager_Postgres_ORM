@@ -100,7 +100,7 @@ router.put("/edit",
         .custom(isValidStatus)
         .withMessage("Invalid Status"),
     check("data.dueDate")
-        .optional()
+        .optional({ nullable: true })
         .isISO8601()
         .withMessage("Due Date must be a valid date")
         .toDate()
