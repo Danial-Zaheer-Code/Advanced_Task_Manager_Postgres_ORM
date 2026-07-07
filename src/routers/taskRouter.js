@@ -101,6 +101,19 @@ router.put("/edit",
         .toDate()
         .custom(isValidDueDate)
         .withMessage("Due date can't be in the past"),
+    check("description")
+        .optional()
+        .isString()
+        .withMessage("Description must be a string")
+        .trim()
+        .escape(),
+    check("categoryId")
+        .optional()
+        .isNumeric()
+        .withMessage("Category Id must be a number")
+        .customSanitizer(id => {
+            return Number(id)
+        }),
     validateRequest,
     validateToken,
     taskController.editTask
