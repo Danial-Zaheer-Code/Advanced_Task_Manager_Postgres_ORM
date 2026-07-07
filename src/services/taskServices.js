@@ -53,6 +53,11 @@ export async function getTodayTasksDB(userId) {
 
         const today = getTodayName();
 
+        const todayRange = {
+            gte: startOfToday,
+            lte: endOfToday,
+        };
+
         const tasks = await prisma.task.findMany({
             where: {
                 userId,
@@ -61,47 +66,33 @@ export async function getTodayTasksDB(userId) {
 
                 OR: [
                     {
-                        dueDate: {
-                            gte: startOfToday,
-                            lte: endOfToday,
-                        },
+                        dueDate: todayRange,
                     },
 
                     {
-                        AND: [
+                        repeatDays: {
+                            some: {
+                                day: today,
+                            },
+                        },
+                        OR: [
                             {
-                                repeatDays: {
-                                    some: {
-                                        day: today,
-                                    },
-                                },
+                                dueDate: null,
                             },
                             {
-                                OR: [
-                                    {
-                                        dueDate: null,
-                                    },
-                                    {
-                                        dueDate: {
-                                            lte: endOfToday,
-                                        },
-                                    },
-                                ],
+                                dueDate: {
+                                    lte: endOfToday,
+                                },
                             },
                         ],
                     },
+
                     {
-                        AND: [
-                            {
-                                repeatDays: {
-                                    none: {}
-                                }
-                            },
-                            {
-                                dueDate: null
-                            }
-                        ]
-                    }
+                        repeatDays: {
+                            none: {},
+                        },
+                        dueDate: null,
+                    },
                 ],
             },
 
@@ -110,17 +101,16 @@ export async function getTodayTasksDB(userId) {
                 title: true,
                 priority: true,
                 description: true,
+
                 category: {
                     select: {
-                        name: true
-                    }
+                        name: true,
+                    },
                 },
+
                 completedTasks: {
                     where: {
-                        completedAt: {
-                            gte: startOfToday,
-                            lte: endOfToday,
-                        },
+                        completedAt: todayRange,
                     },
                     select: {
                         completedAt: true,
