@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma.js";
-import { getTodayName, getTodayRange, constructDataObject } from "../utils/taskServicesHelper.js";
+import { getTodayName, getTodayRange, processTaskEditObject } from "../utils/taskServicesHelper.js";
 
 export async function addTaskDB(userId, task) {
     try {
@@ -170,14 +170,14 @@ export async function getAllTasksDB(userId) {
 
 export async function editTask(userId, task) {
     try {
-        const data = constructDataObject(task);
+        task.data = processTaskEditObject(task.data);
         await prisma.task.update({
             where: {
                 id: task.id,
-                userId: task.userId,
+                userId: userId,
                 isDeleted: false
             },
-            data: data
+            data: task.data
         });
 
     } catch (error) {
