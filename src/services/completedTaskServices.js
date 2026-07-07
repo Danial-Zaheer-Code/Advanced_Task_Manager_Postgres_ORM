@@ -40,69 +40,6 @@ export async function getCompletedTasksDB(userId) {
     }
 }
 
-
-export async function isDueToday(userId, taskId) {
-    try {
-        const today = getTodayName();
-
-        const [startOfToday, endOfToday] = getTodayRange()
-        const task = await prisma.task.findFirst({
-            where: {
-                id: taskId,
-                userId: userId,
-                isDeleted: false,
-                taskStatus: "ACTIVE",
-                OR: [
-                    {
-                        AND: [
-                            {
-                                repeatDays: {
-                                    some: {
-                                        day: today,
-                                    },
-                                },
-                            },
-                            {
-                                OR: [
-                                    {
-                                        dueDate: {
-                                            lte: endOfToday
-                                        }
-                                    },
-                                    {
-                                        dueDate: null
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        dueDate: {
-                            gte: startOfToday,
-                            lte: endOfToday
-                        }
-                    },
-                    {
-                        AND: [
-                            {
-                                dueDate: null
-                            },
-                            {
-                                repeatDays: {
-                                    none: {}
-                                }
-                            }
-                        ]
-                    }
-                ]
-            }
-        });
-        return task != null;
-    } catch (error) {
-        throw error;
-    }
-}
-
 export async function isCompletedToday(userId, taskId) {
     try {
         const [startOfToday, endOfToday] = getTodayRange();

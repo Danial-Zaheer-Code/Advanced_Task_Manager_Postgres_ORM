@@ -205,15 +205,6 @@ export async function isTaskExists(userId, taskId) {
     return await getTask(whereClause) != null;
 }
 
-export async function getCategoryId(userId, taskId) {
-    const task = await getTask({
-        id: taskId,
-        userId: userId
-    })   
-
-    return task.categoryId;
-}
-
 async function getTask(whereClause) {
     try {
         return await prisma.task.findFirst({
@@ -224,3 +215,64 @@ async function getTask(whereClause) {
     }
 }
 
+export async function isDueToday(userId, taskId) {
+    try {
+        const today = getTodayName();
+
+        const [startOfToday, endOfToday] = getTodayRange()
+        const task = await prisma.task.findFirst({
+            where: {
+                id: taskId,
+                userId: userId,
+                isDeleted: false,
+                taskStatus: "ACTIVE",
+                OR: [
+                    {
+                        AND: [
+                            {
+                                repeatDays: {
+                                    some: {
+                                        day: today,
+                                    },
+                                },
+                            },
+                            {
+                                OR: [
+                                    {
+                                        dueDate: {
+                                            lte: endOfToday
+                                        }
+                                    },
+                                    {
+                                        dueDate: null
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        dueDate: {
+                            gte: startOfToday,
+                            lte: endOfToday
+                        }
+                    },
+                    {
+                        AND: [
+                            {
+                                dueDate: null
+                            },
+                            {
+                                repeatDays: {
+                                    none: {}
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+        return task != null;
+    } catch (error) {
+        throw error;
+    }
+}
