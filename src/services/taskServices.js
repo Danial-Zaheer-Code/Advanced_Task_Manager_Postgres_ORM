@@ -202,7 +202,9 @@ export async function isTaskExists(userId, taskId) {
         userId: userId
     }
 
-    return await getTasks(whereClause).count != 0;
+    const tasks = await getTasks(whereClause);
+
+    return tasks.length != 0;
 }
 
 async function getTasks(whereClause) {
