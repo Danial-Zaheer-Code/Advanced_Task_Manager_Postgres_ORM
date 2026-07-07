@@ -164,3 +164,31 @@ router.get("/all",
     validateToken,
     taskController.getAllTasks
 )
+
+router.get("/search",
+    check("title")
+        .exists()
+        .withMessage("Task Title is Required")
+        .isString()
+        .withMessage("Title Must be a string")
+        .notEmpty()
+        .withMessage("Task Title cannot be empty")
+        .escape(),
+    check("priority")
+        .optional()
+        .isString()
+        .withMessage("Priority must be a string")
+        .toUpperCase()
+        .custom(isValidPriority)
+        .withMessage("Invalid Priority"),
+    check("categoryId")
+        .optional()
+        .isNumeric()
+        .withMessage("Category Id must be a number")
+        .customSanitizer(id => {
+            return Number(id)
+        }),
+    validateRequest,
+    validateToken,
+    taskController.searchTasks
+)

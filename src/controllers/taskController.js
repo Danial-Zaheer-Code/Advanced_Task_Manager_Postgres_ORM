@@ -173,3 +173,20 @@ export async function editTask(req, res) {
         });
     }
 }
+
+export async function searchTasks(req, res) {
+    try {
+        const tasks = await taskServices.searchTasks(req.userId, req.body)
+
+        return res.status(200).json({
+            success: true,
+            tasks: tasks
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong. Try again later"
+        });
+    }
+}

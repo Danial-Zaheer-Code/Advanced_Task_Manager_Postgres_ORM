@@ -275,3 +275,14 @@ export async function isDueToday(userId, taskId) {
         throw error;
     }
 }
+
+export async function searchTasks(userId, filters){
+    filters.userId = userId
+
+    if(filters.title){
+        filters.title = {
+            contains: filters.title
+        }
+    }
+    return await getTasks(filters)
+}
