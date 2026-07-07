@@ -202,12 +202,12 @@ export async function isTaskExists(userId, taskId) {
         userId: userId
     }
 
-    return await getTask(whereClause) != null;
+    return await getTasks(whereClause).count != 0;
 }
 
-async function getTask(whereClause) {
+async function getTasks(whereClause) {
     try {
-        return await prisma.task.findFirst({
+        return await prisma.task.findMany({
             where: whereClause
         })
     } catch (error) {
